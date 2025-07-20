@@ -51,12 +51,12 @@ export default function CoordinatorDashboard() {
     return null;
   }
 
-  const urgentShifts = shifts?.filter((shift: any) => {
+  const urgentShifts = (shifts && Array.isArray(shifts) ? shifts.filter((shift: any) => {
     const now = new Date();
     const timeDiff = new Date(shift.startTime).getTime() - now.getTime();
     const hoursUntilShift = timeDiff / (1000 * 60 * 60);
     return hoursUntilShift < 2 && shift.status === 'open';
-  }) || [];
+  }) : []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50">
@@ -90,13 +90,13 @@ export default function CoordinatorDashboard() {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
                 <img 
-                  src={user.profileImageUrl || "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"} 
+                  src={(user as any)?.profileImageUrl || "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"} 
                   alt="Coordinator profile" 
                   className="w-10 h-10 rounded-full object-cover border-2 border-white/50" 
                 />
                 <div className="hidden md:block">
                   <p className="text-sm font-medium text-gray-800">
-                    {user.firstName} {user.lastName}
+                    {(user as any)?.firstName} {(user as any)?.lastName}
                   </p>
                   <p className="text-xs text-gray-600">Shift Coordinator</p>
                 </div>
@@ -124,7 +124,7 @@ export default function CoordinatorDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Open Shifts</p>
                 <p className="text-3xl font-bold text-red-600 animate-counter-up">
-                  {stats?.openShifts || 0}
+                  {(stats as any)?.openShifts || 0}
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-r from-red-400 to-pink-500 rounded-xl">
@@ -138,7 +138,7 @@ export default function CoordinatorDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Fill Rate</p>
                 <p className="text-3xl font-bold text-green-600 animate-counter-up">
-                  {stats?.fillRate || 0}%
+                  {(stats as any)?.fillRate || 0}%
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-r from-green-400 to-teal-500 rounded-xl">
@@ -152,7 +152,7 @@ export default function CoordinatorDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Active Nurses</p>
                 <p className="text-3xl font-bold text-blue-600 animate-counter-up">
-                  {stats?.activeNurses || 0}
+                  {(stats as any)?.activeNurses || 0}
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl">
@@ -166,7 +166,7 @@ export default function CoordinatorDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Weekly Cost</p>
                 <p className="pay-rate text-2xl font-bold font-mono animate-counter-up">
-                  ${Math.round((stats?.weeklyCost || 0) / 1000)}K
+                  ${Math.round(((stats as any)?.weeklyCost || 0) / 1000)}K
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl">
@@ -206,7 +206,7 @@ export default function CoordinatorDashboard() {
 
             {/* Shift Status Grid */}
             <div className="space-y-4">
-              {shifts && shifts.length > 0 ? (
+              {shifts && Array.isArray(shifts) && shifts.length > 0 ? (
                 shifts.slice(0, 5).map((shift: any) => {
                   const now = new Date();
                   const timeDiff = new Date(shift.startTime).getTime() - now.getTime();
@@ -302,18 +302,18 @@ export default function CoordinatorDashboard() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Shifts Posted</span>
-                  <span className="font-semibold text-gray-800">{shifts?.length || 0}</span>
+                  <span className="font-semibold text-gray-800">{(shifts && Array.isArray(shifts) ? shifts.length : 0)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Filled</span>
                   <span className="font-semibold text-green-600">
-                    {shifts?.filter((s: any) => s.status === 'claimed').length || 0}
+                    {(shifts && Array.isArray(shifts) ? shifts.filter((s: any) => s.status === 'claimed').length : 0)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Pending</span>
                   <span className="font-semibold text-blue-600">
-                    {shifts?.filter((s: any) => s.status === 'open').length || 0}
+                    {(shifts && Array.isArray(shifts) ? shifts.filter((s: any) => s.status === 'open').length : 0)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">

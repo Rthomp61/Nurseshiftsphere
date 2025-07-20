@@ -163,7 +163,7 @@ export function ClaimModal({ shift, isOpen, onClose }: ClaimModalProps) {
           <label className="flex items-start glass-morphism rounded-xl p-4 cursor-pointer hover:bg-white/20 transition-all">
             <Checkbox 
               checked={isConfirmed}
-              onCheckedChange={setIsConfirmed}
+              onCheckedChange={(checked) => setIsConfirmed(checked === true)}
               className="mr-3 mt-1"
             />
             <div>

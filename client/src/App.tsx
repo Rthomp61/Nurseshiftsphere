@@ -19,7 +19,7 @@ function Router() {
       ) : (
         <>
           <Route path="/">
-            {user?.role === 'coordinator' ? <CoordinatorDashboard /> : <NurseDashboard />}
+            {(user as any)?.role === 'coordinator' ? <CoordinatorDashboard /> : <NurseDashboard />}
           </Route>
         </>
       )}

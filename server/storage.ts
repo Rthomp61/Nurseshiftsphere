@@ -106,7 +106,7 @@ export class DatabaseStorage implements IStorage {
     // Apply filters
     const conditions = [];
     if (filters?.status) {
-      conditions.push(inArray(shifts.status, filters.status));
+      conditions.push(inArray(shifts.status, filters.status as any));
     }
     if (filters?.department) {
       conditions.push(eq(shifts.department, filters.department));
@@ -122,7 +122,7 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      query = query.where(and(...conditions)) as typeof query;
     }
 
     const result = await query;
@@ -153,7 +153,7 @@ export class DatabaseStorage implements IStorage {
     return result.map(r => ({
       ...r.shift,
       creator: r.creator!,
-      claimedBy: r.shift.claimedBy ? undefined : null, // Will be populated if needed
+      claimedBy: null, // Will be populated if needed
       applications: applicationsByShift[r.shift.id] || [],
     }));
   }

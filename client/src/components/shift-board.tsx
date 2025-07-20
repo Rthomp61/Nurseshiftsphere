@@ -59,7 +59,7 @@ export function ShiftBoard() {
       </div>
 
       <div className="space-y-4 custom-scroll max-h-96 overflow-y-auto pr-2">
-        {shifts && shifts.length > 0 ? (
+        {shifts && Array.isArray(shifts) && shifts.length > 0 ? (
           shifts.map((shift: ShiftWithDetails) => (
             <ShiftCard
               key={shift.id}

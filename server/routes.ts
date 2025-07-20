@@ -43,6 +43,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/shifts/:id', isAuthenticated, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid shift ID" });
+      }
+      
       const shift = await storage.getShiftById(id);
       
       if (!shift) {

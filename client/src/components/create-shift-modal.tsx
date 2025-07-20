@@ -330,7 +330,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
               <label className="flex items-center glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all cursor-pointer">
                 <Checkbox 
                   checked={formData.requirements.rnLicense}
-                  onCheckedChange={(checked) => updateRequirement('rnLicense', !!checked)}
+                  onCheckedChange={(checked) => updateRequirement('rnLicense', checked === true)}
                   className="mr-3"
                 />
                 <span className="text-sm text-gray-700">RN License Required</span>
@@ -338,7 +338,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
               <label className="flex items-center glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all cursor-pointer">
                 <Checkbox 
                   checked={formData.requirements.bls}
-                  onCheckedChange={(checked) => updateRequirement('bls', !!checked)}
+                  onCheckedChange={(checked) => updateRequirement('bls', checked === true)}
                   className="mr-3"
                 />
                 <span className="text-sm text-gray-700">BLS Certification</span>
@@ -346,7 +346,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
               <label className="flex items-center glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all cursor-pointer">
                 <Checkbox 
                   checked={formData.requirements.acls}
-                  onCheckedChange={(checked) => updateRequirement('acls', !!checked)}
+                  onCheckedChange={(checked) => updateRequirement('acls', checked === true)}
                   className="mr-3"
                 />
                 <span className="text-sm text-gray-700">ACLS Certification</span>
@@ -354,7 +354,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
               <label className="flex items-center glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all cursor-pointer">
                 <Checkbox 
                   checked={formData.requirements.icuExperience}
-                  onCheckedChange={(checked) => updateRequirement('icuExperience', !!checked)}
+                  onCheckedChange={(checked) => updateRequirement('icuExperience', checked === true)}
                   className="mr-3"
                 />
                 <span className="text-sm text-gray-700">ICU Experience</span>
@@ -402,17 +402,31 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
                   value="urgent"
                   checked={formData.priority === "urgent"}
                   onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
-                  className="mr-3 text-purple-500"
+                  className="mr-3 text-orange-500"
                 />
                 <div>
                   <p className="text-sm font-medium text-gray-700">Urgent Post</p>
-                  <p className="text-xs text-gray-500">Enhanced visibility + notifications to nearby nurses</p>
+                  <p className="text-xs text-gray-500">Higher visibility and priority placement</p>
+                </div>
+              </label>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="priority"
+                  value="critical"
+                  checked={formData.priority === "critical"}
+                  onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
+                  className="mr-3 text-red-500"
+                />
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Critical Post</p>
+                  <p className="text-xs text-gray-500">Maximum visibility with instant notifications</p>
                 </div>
               </label>
             </div>
           </GlassCard>
 
-          {/* Action Buttons */}
+          {/* Submit Buttons */}
           <div className="flex gap-4 pt-4">
             <Button
               type="button"

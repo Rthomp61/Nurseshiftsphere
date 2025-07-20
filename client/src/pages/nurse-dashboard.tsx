@@ -85,13 +85,13 @@ export default function NurseDashboard() {
               {/* User Profile */}
               <div className="flex items-center space-x-3">
                 <img 
-                  src={user.profileImageUrl || "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"} 
+                  src={(user as any)?.profileImageUrl || "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"} 
                   alt="Profile picture" 
                   className="w-10 h-10 rounded-full object-cover border-2 border-white/50" 
                 />
                 <div className="hidden md:block">
                   <p className="text-sm font-medium text-gray-800">
-                    {user.firstName} {user.lastName}
+                    {(user as any)?.firstName} {(user as any)?.lastName}
                   </p>
                   <p className="text-xs text-gray-600">RN • Available</p>
                 </div>
@@ -119,7 +119,7 @@ export default function NurseDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">This Week</p>
                 <p className="pay-rate text-2xl font-bold font-mono animate-counter-up">
-                  ${stats?.weeklyEarnings || 0}
+                  ${(stats as any)?.weeklyEarnings || 0}
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-r from-green-400 to-teal-500 rounded-xl">
@@ -133,7 +133,7 @@ export default function NurseDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Hours Worked</p>
                 <p className="text-2xl font-bold text-blue-600 animate-counter-up">
-                  {stats?.hoursWorked || 0}h
+                  {(stats as any)?.hoursWorked || 0}h
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl">
@@ -147,7 +147,7 @@ export default function NurseDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">Shifts Claimed</p>
                 <p className="text-2xl font-bold text-purple-600 animate-counter-up">
-                  {stats?.shiftsClaimed || 0}
+                  {(stats as any)?.shiftsClaimed || 0}
                 </p>
               </div>
               <div className="p-3 bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl">
@@ -162,7 +162,7 @@ export default function NurseDashboard() {
                 <p className="text-sm font-medium text-gray-600">Rating</p>
                 <div className="flex items-center">
                   <p className="text-2xl font-bold text-orange-500 animate-counter-up">
-                    {stats?.averageRating || 4.9}
+                    {(stats as any)?.averageRating || 4.9}
                   </p>
                   <div className="ml-2">
                     {[...Array(5)].map((_, i) => (
@@ -193,7 +193,7 @@ export default function NurseDashboard() {
                 My Upcoming Shifts
               </h3>
               <div className="space-y-3">
-                {myShifts && myShifts.length > 0 ? (
+                {myShifts && Array.isArray(myShifts) && myShifts.length > 0 ? (
                   myShifts.slice(0, 2).map((shift: any) => (
                     <div key={shift.id} className="bg-gradient-to-r from-blue-50 to-teal-50 rounded-xl p-4 border-l-4 border-blue-500">
                       <div className="flex justify-between items-start">
