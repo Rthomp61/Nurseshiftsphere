@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { ShiftBoard } from "@/components/shift-board";
-import { GlassCard } from "@/components/ui/glass-card";
+import { ShiftBoard } from "../components/shift-board";
+import { GlassCard } from "../components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 
 export default function NurseDashboard() {
@@ -69,6 +69,15 @@ export default function NurseDashboard() {
                 </button>
                 <button className="px-4 py-2 rounded-md text-gray-600 hover:bg-white/20 transition-all">
                   <i className="fas fa-calendar-alt mr-2" />Shifts
+                </button>
+                <button 
+                  onClick={() => {
+                    // Simulate role switch for demo purposes
+                    window.location.reload();
+                  }}
+                  className="px-4 py-2 rounded-md text-gray-600 hover:bg-white/20 transition-all"
+                >
+                  <i className="fas fa-user-tie mr-2" />Coordinator View
                 </button>
               </div>
             </div>

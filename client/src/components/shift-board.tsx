@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ShiftCard } from "./shift-card";
-import { ClaimModal } from "./claim-modal";
+import { ShiftCard } from "../components/shift-card";
+import { ClaimModal } from "../components/claim-modal";
 import { type ShiftWithDetails } from "@shared/schema";
 
 export function ShiftBoard() {
@@ -12,7 +12,7 @@ export function ShiftBoard() {
   const [statusFilter, setStatusFilter] = useState("open");
 
   const { data: shifts, isLoading } = useQuery({
-    queryKey: ["/api/shifts", { status: [statusFilter] }],
+    queryKey: ["/api/shifts", { status: statusFilter }],
     retry: false,
   });
 

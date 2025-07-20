@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { GlassCard } from "@/components/ui/glass-card";
+import { GlassCard } from "../components/ui/glass-card";
 import { Button } from "@/components/ui/button";
-import { CreateShiftModal } from "@/components/create-shift-modal";
+import { CreateShiftModal } from "../components/create-shift-modal";
 
 export default function CoordinatorDashboard() {
   const { toast } = useToast();
