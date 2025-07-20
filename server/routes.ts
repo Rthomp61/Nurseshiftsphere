@@ -202,7 +202,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         shifts = await storage.getShifts({ 
           status: ['claimed', 'filled'],
         });
-        shifts = shifts.filter(shift => shift.claimedBy?.id === userId);
+        shifts = shifts.filter(shift => shift.claimedBy === userId);
       } else if (user.role === 'coordinator') {
         // Get created shifts for coordinator
         shifts = await storage.getShifts({ createdBy: userId });
