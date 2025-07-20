@@ -84,6 +84,21 @@ export default function CoordinatorDashboard() {
                 <button className="px-4 py-2 rounded-md text-gray-600 hover:bg-white/20 transition-all">
                   <i className="fas fa-users mr-2" />Staff
                 </button>
+                <button 
+                  onClick={async () => {
+                    // Switch to nurse role
+                    await fetch('/api/users/switch-role', { 
+                      method: 'POST', 
+                      credentials: 'include',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ role: 'nurse' })
+                    });
+                    window.location.reload();
+                  }}
+                  className="px-4 py-2 rounded-md text-gray-600 hover:bg-white/20 transition-all"
+                >
+                  <i className="fas fa-user-nurse mr-2" />Nurse View
+                </button>
               </div>
             </div>
             

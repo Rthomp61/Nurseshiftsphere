@@ -71,8 +71,14 @@ export default function NurseDashboard() {
                   <i className="fas fa-calendar-alt mr-2" />Shifts
                 </button>
                 <button 
-                  onClick={() => {
-                    // Simulate role switch for demo purposes
+                  onClick={async () => {
+                    // Switch to coordinator role
+                    await fetch('/api/users/switch-role', { 
+                      method: 'POST', 
+                      credentials: 'include',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ role: 'coordinator' })
+                    });
                     window.location.reload();
                   }}
                   className="px-4 py-2 rounded-md text-gray-600 hover:bg-white/20 transition-all"
