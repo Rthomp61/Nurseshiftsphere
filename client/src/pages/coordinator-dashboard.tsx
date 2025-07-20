@@ -1,0 +1,404 @@
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { isUnauthorizedError } from "@/lib/authUtils";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Button } from "@/components/ui/button";
+import { CreateShiftModal } from "@/components/create-shift-modal";
+
+export default function CoordinatorDashboard() {
+  const { toast } = useToast();
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Redirect to home if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast({
+        title: "Unauthorized",
+        description: "You are logged out. Logging in again...",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/api/login";
+      }, 500);
+      return;
+    }
+  }, [isAuthenticated, isLoading, toast]);
+
+  const { data: stats } = useQuery({
+    queryKey: ["/api/users/stats"],
+    enabled: !!user,
+    retry: false,
+  });
+
+  const { data: shifts } = useQuery({
+    queryKey: ["/api/my-shifts"],
+    enabled: !!user,
+    retry: false,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-500" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return null;
+  }
+
+  const urgentShifts = shifts?.filter((shift: any) => {
+    const now = new Date();
+    const timeDiff = new Date(shift.startTime).getTime() - now.getTime();
+    const hoursUntilShift = timeDiff / (1000 * 60 * 60);
+    return hoursUntilShift < 2 && shift.status === 'open';
+  }) || [];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50">
+      {/* Coordinator Navigation */}
+      <nav className="glass-morphism sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                  <i className="fas fa-users-cog text-white text-sm" />
+                </div>
+                <h1 className="text-xl font-bold text-gray-800">ShiftGenie <span className="text-purple-600">Pro</span></h1>
+              </div>
+              <div className="hidden md:flex bg-white/20 rounded-lg p-1">
+                <button className="px-4 py-2 rounded-md bg-white/30 text-gray-800 font-medium">
+                  <i className="fas fa-tachometer-alt mr-2" />Dashboard
+                </button>
+                <button 
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="px-4 py-2 rounded-md text-gray-600 hover:bg-white/20 transition-all"
+                >
+                  <i className="fas fa-plus-circle mr-2" />Create Shift
+                </button>
+                <button className="px-4 py-2 rounded-md text-gray-600 hover:bg-white/20 transition-all">
+                  <i className="fas fa-users mr-2" />Staff
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
+                <img 
+                  src={user.profileImageUrl || "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100"} 
+                  alt="Coordinator profile" 
+                  className="w-10 h-10 rounded-full object-cover border-2 border-white/50" 
+                />
+                <div className="hidden md:block">
+                  <p className="text-sm font-medium text-gray-800">
+                    {user.firstName} {user.lastName}
+                  </p>
+                  <p className="text-xs text-gray-600">Shift Coordinator</p>
+                </div>
+              </div>
+              
+              <Button
+                onClick={() => window.location.href = "/api/logout"}
+                variant="ghost"
+                size="sm"
+                className="glass-morphism hover:bg-white/20"
+              >
+                <i className="fas fa-sign-out-alt mr-2" />
+                Logout
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div className="container mx-auto px-4 py-6">
+        {/* Coordinator Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <GlassCard className="rounded-2xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Open Shifts</p>
+                <p className="text-3xl font-bold text-red-600 animate-counter-up">
+                  {stats?.openShifts || 0}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-r from-red-400 to-pink-500 rounded-xl">
+                <i className="fas fa-exclamation-circle text-white" />
+              </div>
+            </div>
+          </GlassCard>
+          
+          <GlassCard className="rounded-2xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Fill Rate</p>
+                <p className="text-3xl font-bold text-green-600 animate-counter-up">
+                  {stats?.fillRate || 0}%
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-r from-green-400 to-teal-500 rounded-xl">
+                <i className="fas fa-chart-line text-white" />
+              </div>
+            </div>
+          </GlassCard>
+          
+          <GlassCard className="rounded-2xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active Nurses</p>
+                <p className="text-3xl font-bold text-blue-600 animate-counter-up">
+                  {stats?.activeNurses || 0}
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded-xl">
+                <i className="fas fa-user-nurse text-white" />
+              </div>
+            </div>
+          </GlassCard>
+          
+          <GlassCard className="rounded-2xl p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Weekly Cost</p>
+                <p className="pay-rate text-2xl font-bold font-mono animate-counter-up">
+                  ${Math.round((stats?.weeklyCost || 0) / 1000)}K
+                </p>
+              </div>
+              <div className="p-3 bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl">
+                <i className="fas fa-dollar-sign text-white" />
+              </div>
+            </div>
+          </GlassCard>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Shift Management Board */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">Shift Management</h2>
+              <Button 
+                onClick={() => setIsCreateModalOpen(true)}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105"
+              >
+                <i className="fas fa-plus mr-2" />Create New Shift
+              </Button>
+            </div>
+
+            {/* Urgent Shifts Alert */}
+            {urgentShifts.length > 0 && (
+              <div className="bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl p-6 mb-6 text-white animate-pulse-glow">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-lg mb-2">⚠️ Urgent: {urgentShifts.length} shifts need immediate attention</h3>
+                    <p className="text-red-100">These shifts start within 2 hours and are still unfilled</p>
+                  </div>
+                  <Button className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-all">
+                    View Critical
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Shift Status Grid */}
+            <div className="space-y-4">
+              {shifts && shifts.length > 0 ? (
+                shifts.slice(0, 5).map((shift: any) => {
+                  const now = new Date();
+                  const timeDiff = new Date(shift.startTime).getTime() - now.getTime();
+                  const hoursUntilShift = timeDiff / (1000 * 60 * 60);
+                  const isUrgent = hoursUntilShift < 2 && shift.status === 'open';
+                  
+                  return (
+                    <GlassCard 
+                      key={shift.id} 
+                      className={`rounded-2xl p-6 border-l-4 ${
+                        isUrgent ? 'border-red-500' : 
+                        shift.status === 'claimed' ? 'border-green-500' : 
+                        'border-blue-500'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="font-bold text-gray-800">{shift.title}</h3>
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              isUrgent ? 'bg-red-500 text-white animate-pulse' :
+                              shift.status === 'claimed' ? 'bg-green-500 text-white' :
+                              'bg-blue-500 text-white'
+                            }`}>
+                              {isUrgent ? `UNFILLED - ${Math.round(hoursUntilShift)}h ${Math.round((hoursUntilShift % 1) * 60)}m` :
+                               shift.status === 'claimed' ? 'FILLED' : 
+                               'ACTIVE'}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">
+                            {new Date(shift.startTime).toLocaleDateString()} • {new Date(shift.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(shift.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                          <p className="text-sm text-gray-600">{shift.location} • {shift.patientRatio || 'Variable ratio'}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="pay-rate text-2xl font-bold font-mono">${shift.payRate}/hr</div>
+                          <p className="text-sm text-gray-500">
+                            ${Math.round(parseFloat(shift.payRate) * ((new Date(shift.endTime).getTime() - new Date(shift.startTime).getTime()) / (1000 * 60 * 60)))} total cost
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className={`text-xs px-2 py-1 rounded-full ${
+                            shift.status === 'claimed' ? 'bg-green-100 text-green-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {shift.status === 'claimed' ? `Claimed by ${shift.claimedBy?.firstName || 'Unknown'}` : '0 applicants'}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            Posted {Math.round((now.getTime() - new Date(shift.createdAt).getTime()) / (1000 * 60 * 60))}h ago
+                          </span>
+                        </div>
+                        <div className="flex space-x-2">
+                          {shift.status === 'open' && (
+                            <Button className="bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-yellow-600 transition-all">
+                              <i className="fas fa-bullhorn mr-1" />Boost
+                            </Button>
+                          )}
+                          <Button className="bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-purple-600 transition-all">
+                            <i className="fas fa-edit mr-1" />Edit
+                          </Button>
+                        </div>
+                      </div>
+                    </GlassCard>
+                  );
+                })
+              ) : (
+                <GlassCard className="rounded-2xl p-8 text-center">
+                  <i className="fas fa-calendar-plus text-gray-400 text-4xl mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">No shifts created yet</h3>
+                  <p className="text-gray-500 mb-4">Get started by creating your first shift</p>
+                  <Button 
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                  >
+                    <i className="fas fa-plus mr-2" />Create Shift
+                  </Button>
+                </GlassCard>
+              )}
+            </div>
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="space-y-6">
+            {/* Quick Stats */}
+            <GlassCard className="rounded-2xl p-6">
+              <h3 className="font-bold text-gray-800 mb-4 flex items-center">
+                <i className="fas fa-chart-pie text-purple-500 mr-2" />
+                Today's Overview
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Shifts Posted</span>
+                  <span className="font-semibold text-gray-800">{shifts?.length || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Filled</span>
+                  <span className="font-semibold text-green-600">
+                    {shifts?.filter((s: any) => s.status === 'claimed').length || 0}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Pending</span>
+                  <span className="font-semibold text-blue-600">
+                    {shifts?.filter((s: any) => s.status === 'open').length || 0}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Avg. Fill Time</span>
+                  <span className="font-semibold text-purple-600">2.5h</span>
+                </div>
+              </div>
+            </GlassCard>
+
+            {/* Recent Activity */}
+            <GlassCard className="rounded-2xl p-6">
+              <h3 className="font-bold text-gray-800 mb-4 flex items-center">
+                <i className="fas fa-history text-blue-500 mr-2" />
+                Recent Activity
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
+                  <div>
+                    <p className="text-sm text-gray-800">Shift claimed by nurse</p>
+                    <p className="text-xs text-gray-500">2 minutes ago</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
+                  <div>
+                    <p className="text-sm text-gray-800">New shift created</p>
+                    <p className="text-xs text-gray-500">15 minutes ago</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2" />
+                  <div>
+                    <p className="text-sm text-gray-800">Nurse updated availability</p>
+                    <p className="text-xs text-gray-500">1 hour ago</p>
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
+
+            {/* Top Performers */}
+            <GlassCard className="rounded-2xl p-6">
+              <h3 className="font-bold text-gray-800 mb-4 flex items-center">
+                <i className="fas fa-star text-yellow-500 mr-2" />
+                Top Performers
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <img 
+                      src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50" 
+                      alt="Top performer" 
+                      className="w-8 h-8 rounded-full object-cover" 
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Sarah Johnson</p>
+                      <p className="text-xs text-gray-500">24 shifts • 4.9★</p>
+                    </div>
+                  </div>
+                  <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">MVP</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <img 
+                      src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=50&h=50" 
+                      alt="Top performer 2" 
+                      className="w-8 h-8 rounded-full object-cover" 
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Michael Chen</p>
+                      <p className="text-xs text-gray-500">19 shifts • 4.8★</p>
+                    </div>
+                  </div>
+                  <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">⭐</span>
+                </div>
+              </div>
+            </GlassCard>
+          </div>
+        </div>
+      </div>
+
+      <CreateShiftModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+      />
+    </div>
+  );
+}
