@@ -71,34 +71,28 @@ export default function CoordinatorDashboard() {
                 </div>
                 <h1 className="text-xl font-bold text-gray-800">ShiftGenie <span className="text-purple-600">Pro</span></h1>
               </div>
-              <div className="hidden md:flex bg-white/20 rounded-lg p-1">
-                <button className="px-4 py-2 rounded-md bg-white/30 text-gray-800 font-medium">
-                  <i className="fas fa-tachometer-alt mr-2" />Dashboard
-                </button>
-                <button 
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="px-4 py-2 rounded-md text-gray-600 hover:bg-white/20 transition-all"
-                >
-                  <i className="fas fa-plus-circle mr-2" />Create Shift
-                </button>
-                <button className="px-4 py-2 rounded-md text-gray-600 hover:bg-white/20 transition-all">
-                  <i className="fas fa-users mr-2" />Staff
-                </button>
-                <button 
-                  onClick={async () => {
-                    // Switch to nurse role
-                    await fetch('/api/users/switch-role', { 
-                      method: 'POST', 
-                      credentials: 'include',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ role: 'nurse' })
-                    });
-                    window.location.reload();
-                  }}
-                  className="px-4 py-2 rounded-md text-gray-600 hover:bg-white/20 transition-all"
-                >
-                  <i className="fas fa-user-nurse mr-2" />Nurse View
-                </button>
+              {/* Role Toggle Slider */}
+              <div className="flex items-center bg-white/20 rounded-xl p-1">
+                <div className="relative w-20 h-8 bg-white/30 rounded-lg">
+                  <button
+                    onClick={async () => {
+                      await fetch('/api/users/switch-role', { 
+                        method: 'POST', 
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ role: 'nurse' })
+                      });
+                      window.location.reload();
+                    }}
+                    className="absolute left-0 top-0 w-10 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:text-gray-800 transition-all"
+                  >
+                    <i className="fas fa-user-nurse text-xs" />
+                  </button>
+                  <div className="absolute right-0 top-0 w-10 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg transition-all duration-300 flex items-center justify-center">
+                    <i className="fas fa-user-tie text-white text-xs" />
+                  </div>
+                </div>
+                <span className="ml-2 text-sm font-medium text-gray-700">Coordinator</span>
               </div>
             </div>
             
