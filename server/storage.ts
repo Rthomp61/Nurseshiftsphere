@@ -153,7 +153,7 @@ export class DatabaseStorage implements IStorage {
     return result.map(r => ({
       ...r.shift,
       creator: r.creator!,
-      claimedBy: null, // Will be populated if needed
+      claimedBy: r.shift.claimedBy, // Keep the actual claimedBy value
       applications: applicationsByShift[r.shift.id] || [],
     }));
   }
