@@ -197,7 +197,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="glass-morphism border-0 focus:ring-2 focus:ring-purple-500"
+                className="bg-white/30 border-gray-300 border-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 placeholder="e.g., ICU Night Shift"
                 required
               />
@@ -207,7 +207,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
                 Department *
               </Label>
               <Select value={formData.department} onValueChange={(value) => setFormData(prev => ({ ...prev, department: value }))}>
-                <SelectTrigger className="glass-morphism border-0 focus:ring-2 focus:ring-purple-500">
+                <SelectTrigger className="bg-white/30 border-gray-300 border-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
                 <SelectContent>
@@ -227,7 +227,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
               Location *
             </Label>
             <Select value={formData.location} onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}>
-              <SelectTrigger className="glass-morphism border-0 focus:ring-2 focus:ring-purple-500">
+              <SelectTrigger className="bg-white/30 border-gray-300 border-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                 <SelectValue placeholder="Select location" />
               </SelectTrigger>
               <SelectContent>
@@ -251,7 +251,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-                className="glass-morphism border-0 focus:ring-2 focus:ring-purple-500"
+                className="bg-white/30 border-gray-300 border-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 min={new Date().toISOString().split('T')[0]}
                 required
               />
@@ -265,7 +265,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
                 type="time"
                 value={formData.startTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
-                className="glass-morphism border-0 focus:ring-2 focus:ring-purple-500"
+                className="bg-white/30 border-gray-300 border-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 required
               />
             </div>
@@ -278,7 +278,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
                 type="time"
                 value={formData.endTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
-                className="glass-morphism border-0 focus:ring-2 focus:ring-purple-500"
+                className="bg-white/30 border-gray-300 border-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 required
               />
             </div>
@@ -297,7 +297,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
                   type="number"
                   value={formData.payRate}
                   onChange={(e) => setFormData(prev => ({ ...prev, payRate: e.target.value }))}
-                  className="glass-morphism border-0 pl-8 focus:ring-2 focus:ring-purple-500"
+                  className="bg-white/30 border-gray-300 border-2 pl-8 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   placeholder="65.00"
                   step="0.50"
                   min="25"
@@ -310,7 +310,7 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
                 Patient Ratio
               </Label>
               <Select value={formData.patientRatio} onValueChange={(value) => setFormData(prev => ({ ...prev, patientRatio: value }))}>
-                <SelectTrigger className="glass-morphism border-0 focus:ring-2 focus:ring-purple-500">
+                <SelectTrigger className="bg-white/30 border-gray-300 border-2 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                   <SelectValue placeholder="Select ratio" />
                 </SelectTrigger>
                 <SelectContent>
