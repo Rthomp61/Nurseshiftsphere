@@ -170,19 +170,9 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="glass-card border-0 backdrop-blur-xl max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <DialogTitle className="text-2xl font-bold text-gray-800">Create New Shift</DialogTitle>
-              <p className="text-gray-600">Fill in the details below to post a new shift</p>
-            </div>
-            <Button
-              onClick={onClose}
-              variant="ghost"
-              size="sm"
-              className="glass-morphism rounded-lg p-2 hover:bg-white/20"
-            >
-              <i className="fas fa-times text-gray-600" />
-            </Button>
+          <div>
+            <DialogTitle className="text-2xl font-bold text-gray-800">Create New Shift</DialogTitle>
+            <p className="text-gray-600">Fill in the details below to post a new shift</p>
           </div>
         </DialogHeader>
 
