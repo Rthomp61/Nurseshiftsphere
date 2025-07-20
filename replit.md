@@ -4,6 +4,14 @@
 
 ShiftGenie is a modern healthcare shift management application built with a full-stack TypeScript architecture. The system enables nurses to discover and claim available shifts while providing coordinators with tools to post and manage shift opportunities. The application features a glass-morphism design with real-time updates and smart matching capabilities.
 
+## Recent Changes (July 2025)
+
+- Fixed critical bug in claimed shifts display - shifts now properly appear in nurse's upcoming shifts section
+- Resolved query URL construction issues that prevented proper API communication
+- Added comprehensive test data with sample shifts for both nurse and coordinator workflows
+- Fixed TypeScript compilation errors and module import paths
+- Implemented proper role-based dashboard navigation with glass-morphism design
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
