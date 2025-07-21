@@ -14,6 +14,7 @@ export default function NurseDashboard() {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading } = useAuth();
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
+  const [isLocationsModalOpen, setIsLocationsModalOpen] = useState(false);
   const [availability, setAvailability] = useState({
     monday: { morning: false, afternoon: false, evening: false, night: false },
     tuesday: { morning: false, afternoon: false, evening: false, night: false },
@@ -22,6 +23,13 @@ export default function NurseDashboard() {
     friday: { morning: false, afternoon: false, evening: false, night: false },
     saturday: { morning: false, afternoon: false, evening: false, night: false },
     sunday: { morning: false, afternoon: false, evening: false, night: false },
+  });
+  const [preferredLocations, setPreferredLocations] = useState({
+    cityGeneral: false,
+    regionalMedical: false,
+    universityHospital: false,
+    childrensHospital: false,
+    communityHealth: false,
   });
 
   // Redirect to home if not authenticated
@@ -264,7 +272,10 @@ export default function NurseDashboard() {
                     <span className="text-sm font-medium text-gray-700">Update Availability</span>
                   </div>
                 </button>
-                <button className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group">
+                <button 
+                  onClick={() => setIsLocationsModalOpen(true)}
+                  className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group"
+                >
                   <div className="flex items-center">
                     <i className="fas fa-map-marked-alt text-green-500 mr-3 group-hover:scale-110 transition-transform" />
                     <span className="text-sm font-medium text-gray-700">Set Preferred Locations</span>
@@ -364,6 +375,106 @@ export default function NurseDashboard() {
               className="flex-1 bg-gradient-to-r from-blue-500 to-teal-500 text-white hover:from-blue-600 hover:to-teal-600"
             >
               Save Changes
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Preferred Locations Modal */}
+      <Dialog open={isLocationsModalOpen} onOpenChange={setIsLocationsModalOpen}>
+        <DialogContent className="glass-card border-0 backdrop-blur-xl max-w-md">
+          <DialogHeader className="mb-6">
+            <DialogTitle className="text-2xl font-bold text-gray-800">Set Preferred Locations</DialogTitle>
+            <p className="text-gray-600">Select healthcare facilities where you prefer to work</p>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <label className="flex items-center space-x-3 bg-white/20 rounded-xl p-4 cursor-pointer hover:bg-white/30 transition-all">
+              <Checkbox
+                checked={preferredLocations.cityGeneral}
+                onCheckedChange={(checked) => 
+                  setPreferredLocations(prev => ({ ...prev, cityGeneral: checked === true }))
+                }
+              />
+              <div>
+                <p className="font-medium text-gray-800">City General Hospital</p>
+                <p className="text-sm text-gray-600">Downtown • 15 min drive</p>
+              </div>
+            </label>
+
+            <label className="flex items-center space-x-3 bg-white/20 rounded-xl p-4 cursor-pointer hover:bg-white/30 transition-all">
+              <Checkbox
+                checked={preferredLocations.regionalMedical}
+                onCheckedChange={(checked) => 
+                  setPreferredLocations(prev => ({ ...prev, regionalMedical: checked === true }))
+                }
+              />
+              <div>
+                <p className="font-medium text-gray-800">Regional Medical Center</p>
+                <p className="text-sm text-gray-600">Midtown • 20 min drive</p>
+              </div>
+            </label>
+
+            <label className="flex items-center space-x-3 bg-white/20 rounded-xl p-4 cursor-pointer hover:bg-white/30 transition-all">
+              <Checkbox
+                checked={preferredLocations.universityHospital}
+                onCheckedChange={(checked) => 
+                  setPreferredLocations(prev => ({ ...prev, universityHospital: checked === true }))
+                }
+              />
+              <div>
+                <p className="font-medium text-gray-800">University Hospital</p>
+                <p className="text-sm text-gray-600">University District • 25 min drive</p>
+              </div>
+            </label>
+
+            <label className="flex items-center space-x-3 bg-white/20 rounded-xl p-4 cursor-pointer hover:bg-white/30 transition-all">
+              <Checkbox
+                checked={preferredLocations.childrensHospital}
+                onCheckedChange={(checked) => 
+                  setPreferredLocations(prev => ({ ...prev, childrensHospital: checked === true }))
+                }
+              />
+              <div>
+                <p className="font-medium text-gray-800">Children's Hospital</p>
+                <p className="text-sm text-gray-600">Northside • 30 min drive</p>
+              </div>
+            </label>
+
+            <label className="flex items-center space-x-3 bg-white/20 rounded-xl p-4 cursor-pointer hover:bg-white/30 transition-all">
+              <Checkbox
+                checked={preferredLocations.communityHealth}
+                onCheckedChange={(checked) => 
+                  setPreferredLocations(prev => ({ ...prev, communityHealth: checked === true }))
+                }
+              />
+              <div>
+                <p className="font-medium text-gray-800">Community Health Center</p>
+                <p className="text-sm text-gray-600">Westside • 18 min drive</p>
+              </div>
+            </label>
+          </div>
+          
+          <div className="flex gap-3 mt-6">
+            <Button
+              onClick={() => setIsLocationsModalOpen(false)}
+              variant="outline"
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                toast({
+                  title: "Location Preferences Updated",
+                  description: "Your preferred work locations have been saved successfully.",
+                  className: "notification-toast",
+                });
+                setIsLocationsModalOpen(false);
+              }}
+              className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600"
+            >
+              Save Preferences
             </Button>
           </div>
         </DialogContent>
