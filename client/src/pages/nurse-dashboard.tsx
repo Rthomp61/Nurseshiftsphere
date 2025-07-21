@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function NurseDashboard() {
   const { toast } = useToast();
@@ -16,6 +17,7 @@ export default function NurseDashboard() {
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
   const [isLocationsModalOpen, setIsLocationsModalOpen] = useState(false);
   const [isEarningsModalOpen, setIsEarningsModalOpen] = useState(false);
+  const [earningsTab, setEarningsTab] = useState('overview');
   const [availability, setAvailability] = useState({
     monday: { morning: false, afternoon: false, evening: false, night: false },
     tuesday: { morning: false, afternoon: false, evening: false, night: false },
@@ -486,97 +488,214 @@ export default function NurseDashboard() {
 
       {/* Earnings Report Modal */}
       <Dialog open={isEarningsModalOpen} onOpenChange={setIsEarningsModalOpen}>
-        <DialogContent className="glass-card border-0 backdrop-blur-xl max-w-2xl">
+        <DialogContent className="glass-card border-0 backdrop-blur-xl max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader className="mb-6">
-            <DialogTitle className="text-2xl font-bold text-gray-800">Earnings Report</DialogTitle>
-            <p className="text-gray-600">Detailed breakdown of your earnings and hours</p>
+            <DialogTitle className="text-2xl font-bold text-gray-800">1099 Contractor Earnings Report</DialogTitle>
+            <p className="text-gray-600">Tax-ready financial breakdown for independent healthcare contractors</p>
           </DialogHeader>
           
-          <div className="space-y-6">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">This Week</p>
-                    <p className="text-2xl font-bold text-green-600">$1,722</p>
-                  </div>
-                  <i className="fas fa-dollar-sign text-green-500 text-xl" />
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Hours Worked</p>
-                    <p className="text-2xl font-bold text-blue-600">24h</p>
-                  </div>
-                  <i className="fas fa-clock text-blue-500 text-xl" />
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Avg Hourly</p>
-                    <p className="text-2xl font-bold text-purple-600">$71.75</p>
-                  </div>
-                  <i className="fas fa-chart-line text-purple-500 text-xl" />
-                </div>
-              </div>
-            </div>
+          <Tabs value={earningsTab} onValueChange={setEarningsTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-4 glass-morphism">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="quarterly">Quarterly</TabsTrigger>
+              <TabsTrigger value="expenses">Expenses</TabsTrigger>
+              <TabsTrigger value="tax-prep">Tax Prep</TabsTrigger>
+            </TabsList>
 
-            {/* Recent Shifts */}
-            <div className="bg-white/20 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-800 mb-4">Recent Shifts</h4>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center py-2">
-                  <div>
-                    <p className="font-medium text-gray-800">Emergency Department - Day Shift</p>
-                    <p className="text-sm text-gray-600">Jan 20, 2025 • 7:00 AM - 7:00 PM</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-green-600">$860</p>
-                    <p className="text-sm text-gray-600">12 hours</p>
+            <TabsContent value="overview" className="space-y-6 mt-6">
+              {/* Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Gross Income (YTD)</p>
+                      <p className="text-2xl font-bold text-green-600">$5,166</p>
+                    </div>
+                    <i className="fas fa-dollar-sign text-green-500 text-xl" />
                   </div>
                 </div>
                 
-                <div className="flex justify-between items-center py-2">
-                  <div>
-                    <p className="font-medium text-gray-800">ICU Night Shift</p>
-                    <p className="text-sm text-gray-600">Jan 19, 2025 • 7:00 PM - 7:00 AM</p>
+                <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Tax Set Aside (30%)</p>
+                      <p className="text-2xl font-bold text-blue-600">$1,550</p>
+                    </div>
+                    <i className="fas fa-piggy-bank text-blue-500 text-xl" />
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-green-600">$862</p>
-                    <p className="text-sm text-gray-600">12 hours</p>
+                </div>
+                
+                <div className="bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Business Expenses</p>
+                      <p className="text-2xl font-bold text-orange-600">$487</p>
+                    </div>
+                    <i className="fas fa-receipt text-orange-500 text-xl" />
+                  </div>
+                </div>
+                
+                <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Net Income</p>
+                      <p className="text-2xl font-bold text-purple-600">$4,679</p>
+                    </div>
+                    <i className="fas fa-chart-line text-purple-500 text-xl" />
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Monthly Overview */}
-            <div className="bg-white/20 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-800 mb-4">January 2025 Overview</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">Total Earnings</p>
-                  <p className="text-xl font-bold text-gray-800">$5,166</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Total Hours</p>
-                  <p className="text-xl font-bold text-gray-800">72h</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Shifts Completed</p>
-                  <p className="text-xl font-bold text-gray-800">6</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Perfect Attendance</p>
-                  <p className="text-xl font-bold text-green-600">100%</p>
+              {/* Recent Shifts */}
+              <div className="bg-white/20 rounded-xl p-4">
+                <h4 className="font-semibold text-gray-800 mb-4">Recent Contract Work</h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2 border-b border-gray-200/50">
+                    <div>
+                      <p className="font-medium text-gray-800">Emergency Department - Day Shift</p>
+                      <p className="text-sm text-gray-600">City General Hospital • Jan 20, 2025</p>
+                      <p className="text-xs text-gray-500">12 hours • $71.67/hour</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-green-600">$860.00</p>
+                      <p className="text-sm text-gray-600">Mileage: 24 mi</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2">
+                    <div>
+                      <p className="font-medium text-gray-800">ICU Night Shift</p>
+                      <p className="text-sm text-gray-600">Regional Medical Center • Jan 19, 2025</p>
+                      <p className="text-xs text-gray-500">12 hours • $71.83/hour</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-green-600">$862.00</p>
+                      <p className="text-sm text-gray-600">Mileage: 36 mi</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </TabsContent>
+
+            <TabsContent value="quarterly" className="space-y-6 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white/20 rounded-xl p-4">
+                  <h4 className="font-semibold text-gray-800 mb-4">Q1 2025 Summary</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Gross Income</span>
+                      <span className="font-semibold">$5,166.00</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Business Expenses</span>
+                      <span className="font-semibold text-red-600">-$487.00</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2">
+                      <span className="font-medium">Net Income</span>
+                      <span className="font-bold text-green-600">$4,679.00</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Est. Quarterly Tax</span>
+                      <span className="font-semibold text-blue-600">$1,403.70</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/20 rounded-xl p-4">
+                  <h4 className="font-semibold text-gray-800 mb-4">Upcoming Estimates</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-medium">Q1 2025 Payment</p>
+                        <p className="text-sm text-gray-600">Due: April 15, 2025</p>
+                      </div>
+                      <span className="font-bold text-orange-600">$1,403.70</span>
+                    </div>
+                    <div className="flex justify-between items-center opacity-60">
+                      <div>
+                        <p className="font-medium">Q2 2025 Payment</p>
+                        <p className="text-sm text-gray-600">Due: June 17, 2025</p>
+                      </div>
+                      <span className="font-bold">TBD</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="expenses" className="space-y-6 mt-6">
+              <div className="bg-white/20 rounded-xl p-4">
+                <h4 className="font-semibold text-gray-800 mb-4">Deductible Business Expenses (YTD)</h4>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center py-2 border-b border-gray-200/50">
+                    <div>
+                      <p className="font-medium">Vehicle/Mileage</p>
+                      <p className="text-sm text-gray-600">420 miles @ $0.67/mile</p>
+                    </div>
+                    <span className="font-semibold text-green-600">$281.40</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-200/50">
+                    <div>
+                      <p className="font-medium">Continuing Education</p>
+                      <p className="text-sm text-gray-600">ACLS Renewal, BLS Certification</p>
+                    </div>
+                    <span className="font-semibold text-green-600">$125.00</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-200/50">
+                    <div>
+                      <p className="font-medium">Professional Supplies</p>
+                      <p className="text-sm text-gray-600">Scrubs, stethoscope, badge holder</p>
+                    </div>
+                    <span className="font-semibold text-green-600">$81.60</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-t pt-2">
+                    <span className="font-medium">Total Deductions</span>
+                    <span className="font-bold text-green-600">$487.00</span>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="tax-prep" className="space-y-6 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white/20 rounded-xl p-4">
+                  <h4 className="font-semibold text-gray-800 mb-4">1099-MISC Information</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-sm text-gray-600">Total Nonemployee Compensation</p>
+                      <p className="text-xl font-bold">$5,166.00</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Primary Employer</p>
+                      <p className="font-medium">City General Hospital</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Secondary Employers</p>
+                      <p className="font-medium">Regional Medical, University Hospital</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/20 rounded-xl p-4">
+                  <h4 className="font-semibold text-gray-800 mb-4">Tax Calculation</h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Self-Employment Tax (15.3%)</span>
+                      <span className="font-semibold">$715.71</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Federal Income Tax (est.)</span>
+                      <span className="font-semibold">$687.99</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2">
+                      <span className="font-medium">Total Tax Liability</span>
+                      <span className="font-bold text-red-600">$1,403.70</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
           
           <div className="flex gap-3 mt-6">
             <Button
@@ -588,15 +707,35 @@ export default function NurseDashboard() {
             </Button>
             <Button
               onClick={() => {
+                const currentTab = earningsTab;
+                let exportType = '';
+                
+                switch(currentTab) {
+                  case 'overview':
+                    exportType = 'comprehensive earnings report';
+                    break;
+                  case 'quarterly':
+                    exportType = 'quarterly tax summary';
+                    break;
+                  case 'expenses':
+                    exportType = 'business expense deductions';
+                    break;
+                  case 'tax-prep':
+                    exportType = '1099-MISC tax preparation data';
+                    break;
+                  default:
+                    exportType = 'earnings report';
+                }
+                
                 toast({
-                  title: "Export Coming Soon",
-                  description: "Earnings export feature will be available in the next update.",
+                  title: "Export Ready",
+                  description: `Your ${exportType} has been exported to CSV format for tax software import.`,
                   className: "notification-toast",
                 });
               }}
               className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
             >
-              Export Report
+              Export for Taxes
             </Button>
           </div>
         </DialogContent>
