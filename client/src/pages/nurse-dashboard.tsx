@@ -15,6 +15,7 @@ export default function NurseDashboard() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
   const [isLocationsModalOpen, setIsLocationsModalOpen] = useState(false);
+  const [isEarningsModalOpen, setIsEarningsModalOpen] = useState(false);
   const [availability, setAvailability] = useState({
     monday: { morning: false, afternoon: false, evening: false, night: false },
     tuesday: { morning: false, afternoon: false, evening: false, night: false },
@@ -281,7 +282,10 @@ export default function NurseDashboard() {
                     <span className="text-sm font-medium text-gray-700">Set Preferred Locations</span>
                   </div>
                 </button>
-                <button className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group">
+                <button 
+                  onClick={() => setIsEarningsModalOpen(true)}
+                  className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group"
+                >
                   <div className="flex items-center">
                     <i className="fas fa-chart-line text-purple-500 mr-3 group-hover:scale-110 transition-transform" />
                     <span className="text-sm font-medium text-gray-700">View Earnings Report</span>
@@ -475,6 +479,124 @@ export default function NurseDashboard() {
               className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600"
             >
               Save Preferences
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Earnings Report Modal */}
+      <Dialog open={isEarningsModalOpen} onOpenChange={setIsEarningsModalOpen}>
+        <DialogContent className="glass-card border-0 backdrop-blur-xl max-w-2xl">
+          <DialogHeader className="mb-6">
+            <DialogTitle className="text-2xl font-bold text-gray-800">Earnings Report</DialogTitle>
+            <p className="text-gray-600">Detailed breakdown of your earnings and hours</p>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">This Week</p>
+                    <p className="text-2xl font-bold text-green-600">$1,722</p>
+                  </div>
+                  <i className="fas fa-dollar-sign text-green-500 text-xl" />
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Hours Worked</p>
+                    <p className="text-2xl font-bold text-blue-600">24h</p>
+                  </div>
+                  <i className="fas fa-clock text-blue-500 text-xl" />
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Avg Hourly</p>
+                    <p className="text-2xl font-bold text-purple-600">$71.75</p>
+                  </div>
+                  <i className="fas fa-chart-line text-purple-500 text-xl" />
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Shifts */}
+            <div className="bg-white/20 rounded-xl p-4">
+              <h4 className="font-semibold text-gray-800 mb-4">Recent Shifts</h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center py-2">
+                  <div>
+                    <p className="font-medium text-gray-800">Emergency Department - Day Shift</p>
+                    <p className="text-sm text-gray-600">Jan 20, 2025 • 7:00 AM - 7:00 PM</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-green-600">$860</p>
+                    <p className="text-sm text-gray-600">12 hours</p>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-center py-2">
+                  <div>
+                    <p className="font-medium text-gray-800">ICU Night Shift</p>
+                    <p className="text-sm text-gray-600">Jan 19, 2025 • 7:00 PM - 7:00 AM</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-green-600">$862</p>
+                    <p className="text-sm text-gray-600">12 hours</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Monthly Overview */}
+            <div className="bg-white/20 rounded-xl p-4">
+              <h4 className="font-semibold text-gray-800 mb-4">January 2025 Overview</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">Total Earnings</p>
+                  <p className="text-xl font-bold text-gray-800">$5,166</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Total Hours</p>
+                  <p className="text-xl font-bold text-gray-800">72h</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Shifts Completed</p>
+                  <p className="text-xl font-bold text-gray-800">6</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Perfect Attendance</p>
+                  <p className="text-xl font-bold text-green-600">100%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex gap-3 mt-6">
+            <Button
+              onClick={() => setIsEarningsModalOpen(false)}
+              variant="outline"
+              className="flex-1"
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                toast({
+                  title: "Export Coming Soon",
+                  description: "Earnings export feature will be available in the next update.",
+                  className: "notification-toast",
+                });
+              }}
+              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
+            >
+              Export Report
             </Button>
           </div>
         </DialogContent>
