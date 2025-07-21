@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -6,10 +6,23 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { ShiftBoard } from "../components/shift-board";
 import { GlassCard } from "../components/ui/glass-card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function NurseDashboard() {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading } = useAuth();
+  const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
+  const [availability, setAvailability] = useState({
+    monday: { morning: false, afternoon: false, evening: false, night: false },
+    tuesday: { morning: false, afternoon: false, evening: false, night: false },
+    wednesday: { morning: false, afternoon: false, evening: false, night: false },
+    thursday: { morning: false, afternoon: false, evening: false, night: false },
+    friday: { morning: false, afternoon: false, evening: false, night: false },
+    saturday: { morning: false, afternoon: false, evening: false, night: false },
+    sunday: { morning: false, afternoon: false, evening: false, night: false },
+  });
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -242,7 +255,10 @@ export default function NurseDashboard() {
                 Quick Actions
               </h3>
               <div className="space-y-3">
-                <button className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group">
+                <button 
+                  onClick={() => setIsAvailabilityModalOpen(true)}
+                  className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group"
+                >
                   <div className="flex items-center">
                     <i className="fas fa-user-clock text-blue-500 mr-3 group-hover:scale-110 transition-transform" />
                     <span className="text-sm font-medium text-gray-700">Update Availability</span>
@@ -292,6 +308,66 @@ export default function NurseDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Availability Modal */}
+      <Dialog open={isAvailabilityModalOpen} onOpenChange={setIsAvailabilityModalOpen}>
+        <DialogContent className="glass-card border-0 backdrop-blur-xl max-w-lg">
+          <DialogHeader className="mb-6">
+            <DialogTitle className="text-2xl font-bold text-gray-800">Update Availability</DialogTitle>
+            <p className="text-gray-600">Set your weekly availability preferences</p>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {Object.entries(availability).map(([day, times]) => (
+              <div key={day} className="bg-white/20 rounded-xl p-4">
+                <h4 className="font-semibold text-gray-800 mb-3 capitalize">{day}</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(times).map(([shift, checked]) => (
+                    <label key={shift} className="flex items-center space-x-2 cursor-pointer">
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={(isChecked) => {
+                          setAvailability(prev => ({
+                            ...prev,
+                            [day]: {
+                              ...prev[day],
+                              [shift]: isChecked === true
+                            }
+                          }));
+                        }}
+                      />
+                      <span className="text-sm text-gray-700 capitalize">{shift}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex gap-3 mt-6">
+            <Button
+              onClick={() => setIsAvailabilityModalOpen(false)}
+              variant="outline"
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                toast({
+                  title: "Availability Updated",
+                  description: "Your availability preferences have been saved successfully.",
+                  className: "notification-toast",
+                });
+                setIsAvailabilityModalOpen(false);
+              }}
+              className="flex-1 bg-gradient-to-r from-blue-500 to-teal-500 text-white hover:from-blue-600 hover:to-teal-600"
+            >
+              Save Changes
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
