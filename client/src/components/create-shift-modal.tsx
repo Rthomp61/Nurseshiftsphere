@@ -43,7 +43,12 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
   const createMutation = useMutation({
     mutationFn: async () => {
       const startDateTime = new Date(`${formData.date}T${formData.startTime}`);
-      const endDateTime = new Date(`${formData.date}T${formData.endTime}`);
+      let endDateTime = new Date(`${formData.date}T${formData.endTime}`);
+      
+      // If end time is before start time, assume it's the next day (overnight shift)
+      if (endDateTime <= startDateTime) {
+        endDateTime.setDate(endDateTime.getDate() + 1);
+      }
       
       await apiRequest("POST", "/api/shifts", {
         title: formData.title,
@@ -126,14 +131,21 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
       return;
     }
 
-    // Check if end time is after start time
+    // Check if end time is after start time (handle overnight shifts)
     const startDateTime = new Date(`${formData.date}T${formData.startTime}`);
-    const endDateTime = new Date(`${formData.date}T${formData.endTime}`);
+    let endDateTime = new Date(`${formData.date}T${formData.endTime}`);
     
+    // If end time is before start time, assume it's the next day (overnight shift)
     if (endDateTime <= startDateTime) {
+      endDateTime.setDate(endDateTime.getDate() + 1);
+    }
+    
+    // Now check if the shift duration is reasonable (max 24 hours)
+    const shiftDurationHours = (endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60 * 60);
+    if (shiftDurationHours > 24) {
       toast({
         title: "Validation Error",
-        description: "End time must be after start time.",
+        description: "Shift duration cannot exceed 24 hours.",
         variant: "destructive",
       });
       return;
