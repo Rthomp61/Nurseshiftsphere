@@ -11,6 +11,7 @@ export default function CoordinatorDashboard() {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingShift, setEditingShift] = useState<any>(null);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -276,7 +277,10 @@ export default function CoordinatorDashboard() {
                               <i className="fas fa-bullhorn mr-1" />Boost
                             </Button>
                           )}
-                          <Button className="bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-purple-600 transition-all">
+                          <Button 
+                            onClick={() => setEditingShift(shift)}
+                            className="bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-purple-600 transition-all"
+                          >
                             <i className="fas fa-edit mr-1" />Edit
                           </Button>
                         </div>
@@ -408,6 +412,15 @@ export default function CoordinatorDashboard() {
         isOpen={isCreateModalOpen} 
         onClose={() => setIsCreateModalOpen(false)} 
       />
+      
+      {/* Edit Shift Modal */}
+      {editingShift && (
+        <CreateShiftModal 
+          isOpen={!!editingShift} 
+          onClose={() => setEditingShift(null)}
+          editData={editingShift}
+        />
+      )}
     </div>
   );
 }

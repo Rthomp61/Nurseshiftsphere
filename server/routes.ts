@@ -88,6 +88,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch('/api/shifts/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'coordinator') {
+        return res.status(403).json({ message: "Only coordinators can edit shifts" });
+      }
+
+      const shiftId = parseInt(req.params.id);
+      const existingShift = await storage.getShiftById(shiftId);
+      
+      if (!existingShift) {
+        return res.status(404).json({ message: "Shift not found" });
+      }
+
+      if (existingShift.createdBy !== userId) {
+        return res.status(403).json({ message: "Unauthorized to edit this shift" });
+      }
+
+      const updateData = {
+        ...req.body,
+        startTime: new Date(req.body.startTime),
+        endTime: new Date(req.body.endTime),
+      };
+
+      const updatedShift = await storage.updateShift(shiftId, updateData);
+      res.json(updatedShift);
+    } catch (error) {
+      console.error("Error updating shift:", error);
+      res.status(500).json({ message: "Failed to update shift" });
+    }
+  });
+
   app.patch('/api/shifts/:id/claim', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

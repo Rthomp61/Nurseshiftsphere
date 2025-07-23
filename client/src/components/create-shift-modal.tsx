@@ -15,21 +15,22 @@ import { GlassCard } from "@/components/ui/glass-card";
 interface CreateShiftModalProps {
   isOpen: boolean;
   onClose: () => void;
+  editData?: any;
 }
 
-export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
+export function CreateShiftModal({ isOpen, onClose, editData }: CreateShiftModalProps) {
   const [formData, setFormData] = useState({
-    title: "",
-    department: "",
-    location: "",
-    date: "",
-    startTime: "",
-    endTime: "",
-    payRate: "",
-    patientRatio: "",
-    additionalNotes: "",
-    priority: "normal",
-    requirements: {
+    title: editData?.title || "",
+    department: editData?.department || "",
+    location: editData?.location || "",
+    date: editData?.startTime ? new Date(editData.startTime).toISOString().split('T')[0] : "",
+    startTime: editData?.startTime ? new Date(editData.startTime).toTimeString().slice(0, 5) : "",
+    endTime: editData?.endTime ? new Date(editData.endTime).toTimeString().slice(0, 5) : "",
+    payRate: editData?.payRate || "",
+    patientRatio: editData?.patientRatio || "",
+    additionalNotes: editData?.additionalNotes || "",
+    priority: editData?.priority || "normal",
+    requirements: editData?.requirements || {
       rnLicense: true,
       bls: false,
       acls: false,
@@ -50,7 +51,10 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
         endDateTime.setDate(endDateTime.getDate() + 1);
       }
       
-      await apiRequest("POST", "/api/shifts", {
+      const method = editData ? "PATCH" : "POST";
+      const url = editData ? `/api/shifts/${editData.id}` : "/api/shifts";
+      
+      await apiRequest(method, url, {
         title: formData.title,
         department: formData.department,
         location: formData.location,
@@ -69,8 +73,10 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/users/stats"] });
       
       toast({
-        title: "Shift Created Successfully!",
-        description: `${formData.title} has been posted and is now available for nurses to claim`,
+        title: editData ? "Shift Updated Successfully!" : "Shift Created Successfully!",
+        description: editData 
+          ? `${formData.title} has been updated` 
+          : `${formData.title} has been posted and is now available for nurses to claim`,
         className: "notification-toast",
       });
       
@@ -183,8 +189,12 @@ export function CreateShiftModal({ isOpen, onClose }: CreateShiftModalProps) {
       <DialogContent className="glass-card border-0 backdrop-blur-xl max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="mb-6">
           <div>
-            <DialogTitle className="text-2xl font-bold text-gray-800">Create New Shift</DialogTitle>
-            <p className="text-gray-600">Fill in the details below to post a new shift</p>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              {editData ? "Edit Shift" : "Create New Shift"}
+            </DialogTitle>
+            <p className="text-gray-600">
+              {editData ? "Update the shift details below" : "Fill in the details below to post a new shift"}
+            </p>
           </div>
         </DialogHeader>
 
