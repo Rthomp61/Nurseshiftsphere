@@ -6,12 +6,14 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { GlassCard } from "../components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { CreateShiftModal } from "../components/create-shift-modal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function CoordinatorDashboard() {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading } = useAuth();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<any>(null);
+  const [showCriticalShifts, setShowCriticalShifts] = useState(false);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -207,7 +209,10 @@ export default function CoordinatorDashboard() {
                     <h3 className="font-bold text-lg mb-2">⚠️ Urgent: {urgentShifts.length} shifts need immediate attention</h3>
                     <p className="text-red-100">These shifts start within 2 hours and are still unfilled</p>
                   </div>
-                  <Button className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-all">
+                  <Button 
+                    onClick={() => setShowCriticalShifts(true)}
+                    className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-all"
+                  >
                     View Critical
                   </Button>
                 </div>
@@ -421,6 +426,82 @@ export default function CoordinatorDashboard() {
           editData={editingShift}
         />
       )}
+
+      {/* Critical Shifts Modal */}
+      <Dialog open={showCriticalShifts} onOpenChange={setShowCriticalShifts}>
+        <DialogContent className="glass-card border-0 backdrop-blur-xl max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="mb-6">
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              ⚠️ Critical & Urgent Shifts
+            </DialogTitle>
+            <p className="text-gray-600">
+              Shifts requiring immediate attention (starting within 2 hours)
+            </p>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {urgentShifts.length > 0 ? (
+              urgentShifts.map((shift: any) => {
+                const now = new Date();
+                const timeDiff = new Date(shift.startTime).getTime() - now.getTime();
+                const hoursUntilShift = timeDiff / (1000 * 60 * 60);
+                const minutesUntilShift = Math.round((hoursUntilShift % 1) * 60);
+                
+                return (
+                  <GlassCard key={shift.id} className="rounded-2xl p-6 border-l-4 border-red-500">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-bold text-gray-800 text-lg">{shift.title}</h3>
+                          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
+                            CRITICAL
+                          </span>
+                          <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">
+                            {Math.floor(hoursUntilShift)}h {minutesUntilShift}m left
+                          </span>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600 mb-1">
+                          <i className="far fa-clock mr-2 text-blue-500" />
+                          <span>
+                            {new Date(shift.startTime).toLocaleDateString()} • {new Date(shift.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(shift.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600 mb-2">
+                          <i className="fas fa-map-marker-alt mr-2 text-red-400" />
+                          <span>{shift.location} - {shift.department}</span>
+                        </div>
+                        <div className="text-2xl font-bold pay-rate">${shift.payRate}/hr</div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button 
+                          onClick={() => setEditingShift(shift)}
+                          className="bg-purple-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-600 transition-all"
+                        >
+                          <i className="fas fa-edit mr-1" />Edit
+                        </Button>
+                        <Button className="bg-yellow-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-yellow-600 transition-all">
+                          <i className="fas fa-bullhorn mr-1" />Boost Pay
+                        </Button>
+                      </div>
+                    </div>
+                    {shift.additionalNotes && (
+                      <div className="bg-gray-50 rounded-lg p-3 mt-3">
+                        <p className="text-sm text-gray-700">{shift.additionalNotes}</p>
+                      </div>
+                    )}
+                  </GlassCard>
+                );
+              })
+            ) : (
+              <div className="text-center py-8">
+                <i className="fas fa-check-circle text-green-500 text-4xl mb-4" />
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">All Good!</h3>
+                <p className="text-gray-500">No critical shifts requiring immediate attention.</p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
