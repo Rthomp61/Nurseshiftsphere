@@ -81,13 +81,38 @@ export class DatabaseStorage implements IStorage {
       urgent.setDate(urgent.getDate() + 1);
       urgent.setHours(15, 0, 0, 0);
 
+      // Create more diverse shift times for presentation
+      const dayShift = new Date();
+      dayShift.setDate(dayShift.getDate() + 1);
+      dayShift.setHours(7, 0, 0, 0);
+
+      const midShift = new Date();
+      midShift.setDate(midShift.getDate() + 2);
+      midShift.setHours(15, 0, 0, 0);
+
+      const nightShift = new Date();
+      nightShift.setDate(nightShift.getDate() + 1);
+      nightShift.setHours(19, 0, 0, 0);
+
+      const overnightShift = new Date();
+      overnightShift.setDate(overnightShift.getDate() + 3);
+      overnightShift.setHours(23, 0, 0, 0);
+
+      const weekendShift = new Date();
+      weekendShift.setDate(weekendShift.getDate() + 5);
+      weekendShift.setHours(6, 0, 0, 0);
+
+      const emergencyShift = new Date();
+      emergencyShift.setDate(emergencyShift.getDate() + 1);
+      emergencyShift.setHours(11, 0, 0, 0);
+
       const mockShifts = [
         {
           title: "ICU Day Shift",
           department: "ICU",
           location: "City General Hospital",
-          startTime: tomorrow,
-          endTime: new Date(tomorrow.getTime() + 12 * 60 * 60 * 1000),
+          startTime: dayShift,
+          endTime: new Date(dayShift.getTime() + 12 * 60 * 60 * 1000),
           payRate: "55.00",
           requirements: "ACLS, BLS, 2+ years ICU experience",
           additionalNotes: "High acuity unit, critical care experience preferred",
@@ -96,37 +121,76 @@ export class DatabaseStorage implements IStorage {
           createdBy: "demo-coordinator-1"
         },
         {
-          title: "Emergency Department - Night",
+          title: "Emergency Night Shift + $15 Bonus",
           department: "Emergency",
           location: "Regional Medical Center",
-          startTime: nextWeek,
-          endTime: new Date(nextWeek.getTime() + 12 * 60 * 60 * 1000),
-          payRate: "62.00",
+          startTime: nightShift,
+          endTime: new Date(nightShift.getTime() + 12 * 60 * 60 * 1000),
+          payRate: "77.00",
           requirements: "ACLS, BLS, PALS, ER experience",
-          additionalNotes: "Fast-paced environment, trauma experience a plus",
+          additionalNotes: "🌙 NIGHT SHIFT BONUS: +$15/hr for coverage 7PM-7AM",
           status: "open" as const,
-          priority: "high" as const,
+          priority: "urgent" as const,
           createdBy: "demo-coordinator-2"
         },
         {
-          title: "URGENT: Med-Surg Coverage",
+          title: "URGENT: Med-Surg Midday",
           department: "Medical-Surgical",
           location: "University Hospital",
-          startTime: urgent,
-          endTime: new Date(urgent.getTime() + 8 * 60 * 60 * 1000),
+          startTime: midShift,
+          endTime: new Date(midShift.getTime() + 8 * 60 * 60 * 1000),
           payRate: "48.00",
           requirements: "BLS, Med-Surg experience",
-          additionalNotes: "Call-out coverage needed immediately",
+          additionalNotes: "Call-out coverage needed immediately - 3PM to 11PM",
           status: "open" as const,
           priority: "critical" as const,
           createdBy: "demo-coordinator-1"
         },
         {
-          title: "Pediatric Ward - Weekend",
+          title: "Overnight ICU + $20 Premium",
+          department: "ICU",
+          location: "City General Hospital",
+          startTime: overnightShift,
+          endTime: new Date(overnightShift.getTime() + 8 * 60 * 60 * 1000),
+          payRate: "75.00",
+          requirements: "ACLS, BLS, 3+ years ICU, overnight experience",
+          additionalNotes: "🌙 OVERNIGHT PREMIUM: +$20/hr for 11PM-7AM shift",
+          status: "open" as const,
+          priority: "urgent" as const,
+          createdBy: "demo-coordinator-1"
+        },
+        {
+          title: "Weekend ER + Holiday Pay",
+          department: "Emergency",
+          location: "Regional Medical Center",
+          startTime: weekendShift,
+          endTime: new Date(weekendShift.getTime() + 12 * 60 * 60 * 1000),
+          payRate: "68.00",
+          requirements: "ACLS, BLS, PALS, weekend availability",
+          additionalNotes: "🎉 WEEKEND BONUS: +$6/hr for Saturday coverage",
+          status: "open" as const,
+          priority: "normal" as const,
+          createdBy: "demo-coordinator-2"
+        },
+        {
+          title: "Emergency Call-In + $25 Bonus",
+          department: "Emergency",
+          location: "University Hospital",
+          startTime: emergencyShift,
+          endTime: new Date(emergencyShift.getTime() + 8 * 60 * 60 * 1000),
+          payRate: "87.00",
+          requirements: "ACLS, BLS, PALS, immediate availability",
+          additionalNotes: "🚨 EMERGENCY RATE: +$25/hr for last-minute coverage",
+          status: "open" as const,
+          priority: "critical" as const,
+          createdBy: "demo-coordinator-2"
+        },
+        {
+          title: "Pediatric Day Shift",
           department: "Pediatrics",
           location: "Children's Hospital",
-          startTime: new Date(nextWeek.getTime() + 24 * 60 * 60 * 1000),
-          endTime: new Date(nextWeek.getTime() + 36 * 60 * 60 * 1000),
+          startTime: new Date(dayShift.getTime() + 24 * 60 * 60 * 1000),
+          endTime: new Date(dayShift.getTime() + 36 * 60 * 60 * 1000),
           payRate: "52.00",
           requirements: "BLS, PALS, Pediatric experience",
           additionalNotes: "Ages 2-17, family-centered care environment",
