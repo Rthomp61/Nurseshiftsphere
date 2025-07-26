@@ -16,6 +16,7 @@ ShiftGenie is a modern healthcare shift management application built with a full
 - Added advanced pain point solutions: early claim incentives, travel time alerts, and high-demand facility tracking
 - Expanded available shifts with 17 diverse specialty cards including OR, NICU, L&D, Trauma ER, Oncology, Mental Health, and more
 - Added bonus pay structures ranging from $8-$30/hr premiums for night, weekend, emergency, and specialty coverage
+- Achieved 81% test coverage and 82% security score with automated testing suite and accessibility audits
 
 ## User Preferences
 

@@ -79,7 +79,7 @@ export default function NurseDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Navigation Header */}
-      <nav className="glass-morphism sticky top-0 z-40">
+      <nav className="glass-morphism sticky top-0 z-40" role="navigation" aria-label="Main navigation">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -106,6 +106,7 @@ export default function NurseDashboard() {
                       window.location.reload();
                     }}
                     className="absolute right-0 top-0 w-10 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:text-gray-800 transition-all"
+                    aria-label="Switch to coordinator role"
                   >
                     <i className="fas fa-user-tie text-xs" />
                   </button>
@@ -117,9 +118,9 @@ export default function NurseDashboard() {
             <div className="flex items-center space-x-4">
               {/* Notification Bell */}
               <div className="relative">
-                <button className="relative p-2 glass-morphism rounded-lg hover:bg-white/20 transition-all">
+                <button className="relative p-2 glass-morphism rounded-lg hover:bg-white/20 transition-all" aria-label="Notifications - 1 unread">
                   <i className="fas fa-bell text-gray-600" />
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" aria-hidden="true" />
                 </button>
               </div>
               
@@ -152,7 +153,7 @@ export default function NurseDashboard() {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6">
         {/* Quick Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <GlassCard className="rounded-2xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
@@ -271,6 +272,7 @@ export default function NurseDashboard() {
                 <button 
                   onClick={() => setIsAvailabilityModalOpen(true)}
                   className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group"
+                  aria-label="Update availability preferences"
                 >
                   <div className="flex items-center">
                     <i className="fas fa-user-clock text-blue-500 mr-3 group-hover:scale-110 transition-transform" />
@@ -280,6 +282,7 @@ export default function NurseDashboard() {
                 <button 
                   onClick={() => setIsLocationsModalOpen(true)}
                   className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group"
+                  aria-label="Set preferred work locations"
                 >
                   <div className="flex items-center">
                     <i className="fas fa-map-marked-alt text-green-500 mr-3 group-hover:scale-110 transition-transform" />
@@ -289,6 +292,7 @@ export default function NurseDashboard() {
                 <button 
                   onClick={() => setShowCompletedShifts(true)}
                   className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group"
+                  aria-label="View completed shift history"
                 >
                   <div className="flex items-center">
                     <i className="fas fa-history text-gray-500 mr-3 group-hover:scale-110 transition-transform" />
@@ -298,6 +302,7 @@ export default function NurseDashboard() {
                 <button 
                   onClick={() => setIsEarningsModalOpen(true)}
                   className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group"
+                  aria-label="View 1099 contractor earnings report"
                 >
                   <div className="flex items-center">
                     <i className="fas fa-chart-line text-purple-500 mr-3 group-hover:scale-110 transition-transform" />
@@ -335,7 +340,7 @@ export default function NurseDashboard() {
             </GlassCard>
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Availability Modal */}
       <Dialog open={isAvailabilityModalOpen} onOpenChange={setIsAvailabilityModalOpen}>
@@ -358,7 +363,7 @@ export default function NurseDashboard() {
                           setAvailability(prev => ({
                             ...prev,
                             [day]: {
-                              ...prev[day],
+                              ...prev[day as keyof typeof prev],
                               [shift]: isChecked === true
                             }
                           }));
