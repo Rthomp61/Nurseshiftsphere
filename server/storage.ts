@@ -61,6 +61,87 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // Initialize with presentation mock data
+  private async initializeMockData() {
+    try {
+      // Check if we already have shifts
+      const existingShifts = await db.select().from(shifts).limit(1);
+      if (existingShifts.length > 0) return;
+
+      // Add mock shifts for presentation
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(7, 0, 0, 0);
+
+      const nextWeek = new Date();
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      nextWeek.setHours(19, 0, 0, 0);
+
+      const urgent = new Date();
+      urgent.setDate(urgent.getDate() + 1);
+      urgent.setHours(15, 0, 0, 0);
+
+      const mockShifts = [
+        {
+          title: "ICU Day Shift",
+          department: "ICU",
+          location: "City General Hospital",
+          startTime: tomorrow,
+          endTime: new Date(tomorrow.getTime() + 12 * 60 * 60 * 1000),
+          payRate: "55.00",
+          requirements: "ACLS, BLS, 2+ years ICU experience",
+          additionalNotes: "High acuity unit, critical care experience preferred",
+          status: "open" as const,
+          priority: "normal" as const,
+          createdBy: "demo-coordinator-1"
+        },
+        {
+          title: "Emergency Department - Night",
+          department: "Emergency",
+          location: "Regional Medical Center",
+          startTime: nextWeek,
+          endTime: new Date(nextWeek.getTime() + 12 * 60 * 60 * 1000),
+          payRate: "62.00",
+          requirements: "ACLS, BLS, PALS, ER experience",
+          additionalNotes: "Fast-paced environment, trauma experience a plus",
+          status: "open" as const,
+          priority: "high" as const,
+          createdBy: "demo-coordinator-2"
+        },
+        {
+          title: "URGENT: Med-Surg Coverage",
+          department: "Medical-Surgical",
+          location: "University Hospital",
+          startTime: urgent,
+          endTime: new Date(urgent.getTime() + 8 * 60 * 60 * 1000),
+          payRate: "48.00",
+          requirements: "BLS, Med-Surg experience",
+          additionalNotes: "Call-out coverage needed immediately",
+          status: "open" as const,
+          priority: "critical" as const,
+          createdBy: "demo-coordinator-1"
+        },
+        {
+          title: "Pediatric Ward - Weekend",
+          department: "Pediatrics",
+          location: "Children's Hospital",
+          startTime: new Date(nextWeek.getTime() + 24 * 60 * 60 * 1000),
+          endTime: new Date(nextWeek.getTime() + 36 * 60 * 60 * 1000),
+          payRate: "52.00",
+          requirements: "BLS, PALS, Pediatric experience",
+          additionalNotes: "Ages 2-17, family-centered care environment",
+          status: "open" as const,
+          priority: "normal" as const,
+          createdBy: "demo-coordinator-2"
+        }
+      ];
+
+      await db.insert(shifts).values(mockShifts);
+    } catch (error) {
+      console.log("Mock data initialization skipped:", error);
+    }
+  }
+
   // User operations
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
@@ -107,6 +188,8 @@ export class DatabaseStorage implements IStorage {
     notExpired?: boolean;
     includeExpired?: boolean;
   }): Promise<ShiftWithDetails[]> {
+    // Initialize mock data for presentation
+    await this.initializeMockData();
     let query = db
       .select({
         shift: shifts,
