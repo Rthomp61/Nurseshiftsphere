@@ -21,6 +21,164 @@ ShiftGenie is a modern healthcare shift management application built with a full
 
 Preferred communication style: Simple, everyday language.
 
+## Testing Standards & Quality Assurance
+
+### A. ACCESSIBILITY
+- Ensure keyboard navigation works across all interactive elements
+- Run WCAG 2.1 AA compliance checks (color contrast, labels, alt text)
+- Validate screen reader compatibility (e.g., NVDA or VoiceOver)
+- Check ARIA roles and landmarks are used correctly
+- Test for focus states and tab order
+- Ensure semantic HTML (e.g., <button>, <nav>, <section>)
+
+### B. AUTHENTICATION & SECURITY
+- Confirm login/logout sessions expire correctly (check JWT/cookies)
+- Run penetration tests (e.g., XSS, CSRF, SQL injection)
+- Check HTTPS enforcement
+- Validate password strength enforcement
+- Ensure secure storage of sensitive data (e.g., hashed passwords)
+- Verify OAuth/token expiry and refresh logic
+
+### C. CORE FUNCTIONALITY
+- Validate primary user flows (sign up, search, cart, checkout, etc.)
+- Check form validations (client-side and server-side)
+- Confirm API requests are handled gracefully (timeouts, retries)
+- Verify correct state transitions for UI components
+- Test undo/redo functionality if applicable
+
+### D. DEVICE RESPONSIVENESS
+- Test across mobile, tablet, and desktop breakpoints
+- Validate viewport meta tag and responsive image loading
+- Check mobile touch targets and tap behavior
+- Simulate real-world mobile network conditions (3G/4G/5G)
+
+### E. ERROR HANDLING
+- Ensure meaningful error messages are displayed to users
+- Validate fallback UI for 4xx/5xx errors
+- Confirm uncaught exceptions are logged to monitoring services
+- Ensure AI captures edge cases not handled explicitly
+
+### F. FUNCTIONALITY ACROSS ENVIRONMENTS
+- Validate dev, staging, and production environments behave consistently
+- Ensure feature flags work correctly
+- Simulate downgrades or disabled features gracefully
+- Test backup and restore processes (if applicable)
+
+### G. GRAPHICAL INTEGRITY
+- Compare visual components against Figma/Design system
+- Run AI-powered visual regression tests (e.g., Percy, Chromatic)
+- Confirm icon/fonts/images load correctly across themes
+
+### H. HOT RELOADING & LIVE UPDATES
+- Validate auto-refresh or real-time updates work (e.g., WebSockets)
+- Ensure that frontend state remains stable after code reloads
+- Check push notifications (browser/mobile)
+
+### I. INTEGRATION TESTS
+- Test end-to-end flows with AI assistance (Cypress, Playwright, Selenium)
+- Ensure 3rd-party services work: Stripe, Google Maps, Firebase, etc.
+- Stub/mock external services for testing isolation
+
+### J. JAVASCRIPT / FRONTEND LOGIC
+- Check for unused variables or deprecated APIs
+- Ensure async/await or promise chains are handled correctly
+- Run linting and static analysis (ESLint, Prettier)
+- Test reactivity and UI updates (React/Vue/Angular/etc.)
+
+### K. KEYBOARD SHORTCUTS & INTERACTION PATTERNS
+- Confirm all shortcuts are documented and functional
+- Test modifier keys (Ctrl, Alt, Cmd) and event listeners
+
+### L. LOCALIZATION & LANGUAGE
+- Verify internationalization (i18n) keys render correctly
+- Test language switching and directionality (e.g., RTL)
+- Confirm AI translates and tests edge cases in various languages
+
+### M. METRICS & PERFORMANCE
+- Run Lighthouse audits for performance, accessibility, SEO
+- Track Core Web Vitals (LCP, FID, CLS)
+- Simulate low-bandwidth conditions
+- Use AI to predict performance bottlenecks from user behavior
+
+### N. NAVIGATION
+- Validate all routes and deep linking (via URL and UI)
+- Check browser back/forward navigation
+- Test dynamic route parameters and redirects
+
+### O. OFFLINE & CACHING
+- Confirm offline support for PWA-enabled apps
+- Validate service workers and cache strategies
+- Test stale-while-revalidate and cache invalidation rules
+
+### P. PERSONALIZATION / AI LOGIC
+- Validate user-specific content rendering
+- Test recommendation logic (AI-based suggestions)
+- Confirm user feedback loops are tracked properly
+- Validate fallback states if AI API fails
+
+### Q. QUALITY METRICS
+- Ensure test coverage ≥ 90%
+- Track AI-generated test coverage gaps
+- Run mutation testing for robustness
+
+### R. RESPONSIVENESS & INPUT
+- Test multi-touch, drag-and-drop, swiping, long-press
+- Validate forms with voice input, OCR, and autocomplete
+- Ensure debounced and throttled inputs are correctly processed
+
+### S. STORAGE & STATE
+- Validate use of localStorage, sessionStorage, or IndexedDB
+- Check state management across sessions (Redux, Pinia, etc.)
+- Confirm data persistence and hydration logic
+
+### T. TESTING STRATEGY (AI-DRIVEN)
+- Unit tests: logic components, utilities
+- Integration tests: component + service
+- E2E tests: critical workflows
+- AI-generated exploratory test cases for edge flows
+- Auto-regression testing on PRs and deploys
+
+### U. USABILITY & UX
+- Confirm user flows are intuitive (AI can run simulated journeys)
+- Validate onboarding steps and empty states
+- Use heatmap data or session replays for UX pain points
+- Test dark/light mode switching
+
+### V. VERSIONING
+- Confirm semantic versioning (semver) practices
+- Ensure backwards compatibility
+- Validate upgrade and rollback processes
+
+### W. WORKFLOW INTEGRATION
+- Hook test suites into CI/CD pipelines (GitHub Actions, Vercel, etc.)
+- Ensure AI alerts for failing or flaky tests
+- Automate rollback if post-deploy tests fail
+
+### X. X-PLATFORM FUNCTIONALITY
+- Validate functionality across iOS, Android, Windows, macOS, Linux
+- Use BrowserStack or AI agents to simulate edge cases per platform
+
+### Y. YIELD STRESS / LOAD TESTING
+- Use tools like Artillery, Locust, or k6 for stress testing
+- Run AI simulations to model spikes in usage (Black Friday, etc.)
+- Monitor server CPU/memory and client render times
+
+### Z. ZERO DOWNTIME DEPLOYMENT
+- Validate blue/green or canary deployment strategies
+- Check feature toggles and rollback readiness
+- Ensure session migration and DB schema migration safety
+
+### AI-SPECIFIC TESTING CONFIGURATION
+```yaml
+ai_testing_rules:
+  generate_edge_cases: true
+  test_failures_alert: true
+  monitor_behavior_anomalies: true
+  auto_generate_regression_tests: true
+  test_i18n_variants: true
+  simulate_human_behavior_patterns: true
+```
+
 ## System Architecture
 
 ### Frontend Architecture
