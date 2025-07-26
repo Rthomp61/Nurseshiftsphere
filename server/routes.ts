@@ -24,13 +24,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Shift routes
   app.get('/api/shifts', isAuthenticated, async (req: any, res) => {
     try {
-      const { status, department, startDate, endDate } = req.query;
+      const { status, department, startDate, endDate, includeExpired } = req.query;
       
       const filters: any = {};
       if (status) filters.status = Array.isArray(status) ? status : [status];
       if (department) filters.department = department;
       if (startDate) filters.startDate = new Date(startDate);
       if (endDate) filters.endDate = new Date(endDate);
+      
+      // Filter out expired shifts unless specifically requested
+      if (includeExpired !== 'true') {
+        filters.notExpired = true;
+      }
 
       const shifts = await storage.getShifts(filters);
       res.json(shifts);
@@ -217,6 +222,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user stats:", error);
       res.status(500).json({ message: "Failed to fetch user stats" });
+    }
+  });
+
+  // Completed shifts endpoint
+  app.get('/api/completed-shifts', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const filters: any = { includeExpired: true };
+      if (user.role === 'coordinator') {
+        filters.createdBy = userId;
+      } else if (user.role === 'nurse') {
+        filters.claimedBy = userId;
+      }
+
+      const allShifts = await storage.getShifts(filters);
+      
+      // Filter to only include shifts that have passed their start time
+      const completedShifts = (allShifts || []).filter((shift: any) => {
+        const now = new Date();
+        return new Date(shift.startTime) < now;
+      });
+
+      res.json(completedShifts);
+    } catch (error) {
+      console.error("Error fetching completed shifts:", error);
+      res.status(500).json({ message: "Failed to fetch completed shifts" });
     }
   });
 

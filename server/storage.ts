@@ -103,6 +103,9 @@ export class DatabaseStorage implements IStorage {
     startDate?: Date;
     endDate?: Date;
     createdBy?: string;
+    claimedBy?: string;
+    notExpired?: boolean;
+    includeExpired?: boolean;
   }): Promise<ShiftWithDetails[]> {
     let query = db
       .select({
@@ -129,6 +132,13 @@ export class DatabaseStorage implements IStorage {
     }
     if (filters?.createdBy) {
       conditions.push(eq(shifts.createdBy, filters.createdBy));
+    }
+    if (filters?.claimedBy) {
+      conditions.push(eq(shifts.claimedBy, filters.claimedBy));
+    }
+    // Filter out expired shifts (where start time has passed) unless includeExpired is true
+    if (filters?.notExpired || (!filters?.includeExpired && filters?.notExpired !== false)) {
+      conditions.push(gte(shifts.startTime, new Date()));
     }
 
     if (conditions.length > 0) {

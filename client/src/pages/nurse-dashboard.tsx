@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CompletedShiftsModal } from "../components/completed-shifts-modal";
 
 export default function NurseDashboard() {
   const { toast } = useToast();
@@ -18,6 +19,7 @@ export default function NurseDashboard() {
   const [isLocationsModalOpen, setIsLocationsModalOpen] = useState(false);
   const [isEarningsModalOpen, setIsEarningsModalOpen] = useState(false);
   const [earningsTab, setEarningsTab] = useState('overview');
+  const [showCompletedShifts, setShowCompletedShifts] = useState(false);
   const [availability, setAvailability] = useState({
     monday: { morning: false, afternoon: false, evening: false, night: false },
     tuesday: { morning: false, afternoon: false, evening: false, night: false },
@@ -282,6 +284,15 @@ export default function NurseDashboard() {
                   <div className="flex items-center">
                     <i className="fas fa-map-marked-alt text-green-500 mr-3 group-hover:scale-110 transition-transform" />
                     <span className="text-sm font-medium text-gray-700">Set Preferred Locations</span>
+                  </div>
+                </button>
+                <button 
+                  onClick={() => setShowCompletedShifts(true)}
+                  className="w-full text-left glass-morphism rounded-xl p-3 hover:bg-white/20 transition-all duration-200 group"
+                >
+                  <div className="flex items-center">
+                    <i className="fas fa-history text-gray-500 mr-3 group-hover:scale-110 transition-transform" />
+                    <span className="text-sm font-medium text-gray-700">View Completed Shifts</span>
                   </div>
                 </button>
                 <button 
@@ -740,6 +751,12 @@ export default function NurseDashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Completed Shifts Modal */}
+      <CompletedShiftsModal 
+        isOpen={showCompletedShifts} 
+        onClose={() => setShowCompletedShifts(false)} 
+      />
     </div>
   );
 }

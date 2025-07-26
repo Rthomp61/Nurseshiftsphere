@@ -7,6 +7,7 @@ import { GlassCard } from "../components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { CreateShiftModal } from "../components/create-shift-modal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CompletedShiftsModal } from "../components/completed-shifts-modal";
 
 export default function CoordinatorDashboard() {
   const { toast } = useToast();
@@ -14,6 +15,7 @@ export default function CoordinatorDashboard() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<any>(null);
   const [showCriticalShifts, setShowCriticalShifts] = useState(false);
+  const [showCompletedShifts, setShowCompletedShifts] = useState(false);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -193,12 +195,21 @@ export default function CoordinatorDashboard() {
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-800">Shift Management</h2>
-              <Button 
-                onClick={() => setIsCreateModalOpen(true)}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105"
-              >
-                <i className="fas fa-plus mr-2" />Create New Shift
-              </Button>
+              <div className="flex space-x-3">
+                <Button 
+                  onClick={() => setShowCompletedShifts(true)}
+                  variant="outline"
+                  className="px-4 py-2 rounded-xl font-medium border-gray-300 hover:bg-gray-50 transition-all duration-200"
+                >
+                  <i className="fas fa-history mr-2" />View Completed
+                </Button>
+                <Button 
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-xl font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-200 transform hover:scale-105"
+                >
+                  <i className="fas fa-plus mr-2" />Create New Shift
+                </Button>
+              </div>
             </div>
 
             {/* Urgent Shifts Alert */}
@@ -502,6 +513,12 @@ export default function CoordinatorDashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Completed Shifts Modal */}
+      <CompletedShiftsModal 
+        isOpen={showCompletedShifts} 
+        onClose={() => setShowCompletedShifts(false)} 
+      />
     </div>
   );
 }
