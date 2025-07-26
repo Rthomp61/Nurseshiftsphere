@@ -64,9 +64,9 @@ export class DatabaseStorage implements IStorage {
   // Initialize with presentation mock data
   private async initializeMockData() {
     try {
-      // Check if we already have shifts
-      const existingShifts = await db.select().from(shifts).limit(1);
-      if (existingShifts.length > 0) return;
+      // Check if we already have presentation shifts
+      const presentationShifts = await db.select().from(shifts).where(eq(shifts.createdBy, "demo-coordinator-1"));
+      if (presentationShifts.length > 0) return;
 
       // Add mock shifts for presentation
       const tomorrow = new Date();
