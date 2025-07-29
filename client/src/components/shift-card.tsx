@@ -11,11 +11,23 @@ export function ShiftCard({ shift, onClaim }: ShiftCardProps) {
   const startTime = new Date(shift.startTime);
   const endTime = new Date(shift.endTime);
   const duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-  const totalPay = Math.round(duration * parseFloat(shift.payRate));
   
   const now = new Date();
   const timeDiff = startTime.getTime() - now.getTime();
   const hoursUntilShift = timeDiff / (1000 * 60 * 60);
+  
+  // Calculate potential early claim bonus
+  const calculateEarlyBonus = (hours: number): number => {
+    if (hours >= 24) return 5.00;
+    if (hours >= 12) return 3.00;
+    if (hours >= 6) return 1.00;
+    return 0.00;
+  };
+  
+  const baseRate = parseFloat(shift.baseHourlyRate || shift.payRate);
+  const potentialBonus = calculateEarlyBonus(hoursUntilShift);
+  const potentialTotalRate = baseRate + potentialBonus;
+  const totalPay = Math.round(duration * potentialTotalRate);
   
   const isUrgent = hoursUntilShift < 3;
   const isCritical = shift.priority === "critical" || hoursUntilShift < 2;
@@ -67,10 +79,44 @@ export function ShiftCard({ shift, onClaim }: ShiftCardProps) {
           </div>
         </div>
         <div className="text-right">
-          <div className="pay-rate text-3xl font-bold font-mono mb-1">${shift.payRate}/hr</div>
+          {potentialBonus > 0 ? (
+            <div className="mb-2">
+              <div className="flex items-center justify-end gap-2 mb-1">
+                <span className="text-sm text-gray-500 line-through">${baseRate.toFixed(2)}/hr</span>
+                <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                  +${potentialBonus.toFixed(2)} Early Bird
+                </span>
+              </div>
+              <div className="pay-rate text-3xl font-bold font-mono text-green-600">${potentialTotalRate.toFixed(2)}/hr</div>
+            </div>
+          ) : (
+            <div className="pay-rate text-3xl font-bold font-mono mb-1">${shift.payRate}/hr</div>
+          )}
           <div className="text-sm text-green-600 font-medium">${totalPay} total</div>
         </div>
       </div>
+      
+      {/* Early Bird Bonus Timer */}
+      {potentialBonus > 0 && (
+        <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border border-green-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <i className="fas fa-clock text-green-600" />
+              <span className="text-sm font-medium text-gray-700">Early Bird Bonus Active</span>
+            </div>
+            <div className="text-sm text-gray-600">
+              {hoursUntilShift >= 24 && "24+ hours early"}
+              {hoursUntilShift >= 12 && hoursUntilShift < 24 && "12-24 hours early"}
+              {hoursUntilShift >= 6 && hoursUntilShift < 12 && "6-12 hours early"}
+            </div>
+          </div>
+          <div className="mt-2 text-xs text-gray-500">
+            {hoursUntilShift >= 24 && hoursUntilShift < 25 && "Bonus drops to $3/hr in less than 1 hour"}
+            {hoursUntilShift >= 12 && hoursUntilShift < 13 && "Bonus drops to $1/hr in less than 1 hour"}
+            {hoursUntilShift >= 6 && hoursUntilShift < 7 && "Bonus expires in less than 1 hour"}
+          </div>
+        </div>
+      )}
       
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4 text-xs text-gray-500">

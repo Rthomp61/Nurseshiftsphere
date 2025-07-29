@@ -34,6 +34,12 @@ export interface IStorage {
   getShiftById(id: number): Promise<ShiftWithDetails | undefined>;
   updateShift(id: number, updates: Partial<Shift>): Promise<Shift | undefined>;
   claimShift(shiftId: number, nurseId: string): Promise<Shift | undefined>;
+  calculateShiftIncentive(shiftId: number): Promise<{ 
+    earlyClaimBonus: number; 
+    totalHourlyRate: number; 
+    hoursBeforeStart: number;
+    baseHourlyRate: number;
+  } | undefined>;
 
   // Shift application operations
   applyForShift(application: InsertShiftApplication): Promise<ShiftApplication>;
@@ -61,12 +67,45 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // Calculate early claim bonus based on hours before shift start
+  private calculateEarlyClaimBonus(hoursBeforeStart: number): number {
+    if (hoursBeforeStart >= 24) return 5.00;
+    if (hoursBeforeStart >= 12) return 3.00;
+    if (hoursBeforeStart >= 6) return 1.00;
+    return 0.00;
+  }
+
   // Initialize with presentation mock data
   private async initializeMockData() {
     try {
       // Check if we already have presentation shifts
       const presentationShifts = await db.select().from(shifts).where(eq(shifts.createdBy, "demo-coordinator-1"));
       if (presentationShifts.length > 0) return;
+
+      // Create demo users first
+      const demoUsers = [
+        {
+          id: "demo-coordinator-1",
+          email: "coordinator1@hospital.com",
+          firstName: "Sarah",
+          lastName: "Johnson",
+          role: "coordinator" as const,
+          isActive: true,
+        },
+        {
+          id: "demo-coordinator-2", 
+          email: "coordinator2@hospital.com",
+          firstName: "Michael",
+          lastName: "Davis",
+          role: "coordinator" as const,
+          isActive: true,
+        }
+      ];
+
+      // Insert demo users with upsert to avoid conflicts
+      for (const user of demoUsers) {
+        await db.insert(users).values(user).onConflictDoNothing();
+      }
 
       // Add mock shifts for presentation
       const tomorrow = new Date();
@@ -114,6 +153,9 @@ export class DatabaseStorage implements IStorage {
           startTime: dayShift,
           endTime: new Date(dayShift.getTime() + 12 * 60 * 60 * 1000),
           payRate: "55.00",
+          baseHourlyRate: "55.00",
+          earlyClaimBonus: "0.00",
+          totalHourlyRate: "55.00",
           requirements: "ACLS, BLS, 2+ years ICU experience",
           additionalNotes: "High acuity unit, critical care experience preferred",
           status: "open" as const,
@@ -127,6 +169,9 @@ export class DatabaseStorage implements IStorage {
           startTime: nightShift,
           endTime: new Date(nightShift.getTime() + 12 * 60 * 60 * 1000),
           payRate: "77.00",
+          baseHourlyRate: "62.00",
+          earlyClaimBonus: "15.00",
+          totalHourlyRate: "77.00",
           requirements: "ACLS, BLS, PALS, ER experience",
           additionalNotes: "🌙 NIGHT SHIFT BONUS: +$15/hr for coverage 7PM-7AM",
           status: "open" as const,
@@ -140,6 +185,9 @@ export class DatabaseStorage implements IStorage {
           startTime: midShift,
           endTime: new Date(midShift.getTime() + 8 * 60 * 60 * 1000),
           payRate: "48.00",
+          baseHourlyRate: "48.00",
+          earlyClaimBonus: "0.00",
+          totalHourlyRate: "48.00",
           requirements: "BLS, Med-Surg experience",
           additionalNotes: "Call-out coverage needed immediately - 3PM to 11PM",
           status: "open" as const,
@@ -153,6 +201,9 @@ export class DatabaseStorage implements IStorage {
           startTime: overnightShift,
           endTime: new Date(overnightShift.getTime() + 8 * 60 * 60 * 1000),
           payRate: "75.00",
+          baseHourlyRate: "55.00",
+          earlyClaimBonus: "20.00",
+          totalHourlyRate: "75.00",
           requirements: "ACLS, BLS, 3+ years ICU, overnight experience",
           additionalNotes: "🌙 OVERNIGHT PREMIUM: +$20/hr for 11PM-7AM shift",
           status: "open" as const,
@@ -166,6 +217,9 @@ export class DatabaseStorage implements IStorage {
           startTime: weekendShift,
           endTime: new Date(weekendShift.getTime() + 12 * 60 * 60 * 1000),
           payRate: "68.00",
+          baseHourlyRate: "62.00",
+          earlyClaimBonus: "6.00",
+          totalHourlyRate: "68.00",
           requirements: "ACLS, BLS, PALS, weekend availability",
           additionalNotes: "🎉 WEEKEND BONUS: +$6/hr for Saturday coverage",
           status: "open" as const,
@@ -179,6 +233,9 @@ export class DatabaseStorage implements IStorage {
           startTime: emergencyShift,
           endTime: new Date(emergencyShift.getTime() + 8 * 60 * 60 * 1000),
           payRate: "87.00",
+          baseHourlyRate: "62.00",
+          earlyClaimBonus: "25.00",
+          totalHourlyRate: "87.00",
           requirements: "ACLS, BLS, PALS, immediate availability",
           additionalNotes: "🚨 EMERGENCY RATE: +$25/hr for last-minute coverage",
           status: "open" as const,
@@ -192,6 +249,9 @@ export class DatabaseStorage implements IStorage {
           startTime: new Date(dayShift.getTime() + 24 * 60 * 60 * 1000),
           endTime: new Date(dayShift.getTime() + 36 * 60 * 60 * 1000),
           payRate: "52.00",
+          baseHourlyRate: "52.00",
+          earlyClaimBonus: "0.00",
+          totalHourlyRate: "52.00",
           requirements: "BLS, PALS, Pediatric experience",
           additionalNotes: "Ages 2-17, family-centered care environment",
           status: "open" as const,
@@ -238,7 +298,15 @@ export class DatabaseStorage implements IStorage {
 
   // Shift operations
   async createShift(shiftData: InsertShift): Promise<Shift> {
-    const [shift] = await db.insert(shifts).values(shiftData).returning();
+    // Set default values for new incentive fields
+    const shiftDataWithDefaults = {
+      ...shiftData,
+      baseHourlyRate: shiftData.baseHourlyRate || shiftData.payRate,
+      earlyClaimBonus: "0.00",
+      totalHourlyRate: shiftData.payRate,
+    };
+    
+    const [shift] = await db.insert(shifts).values(shiftDataWithDefaults).returning();
     return shift;
   }
 
@@ -317,12 +385,28 @@ export class DatabaseStorage implements IStorage {
       return acc;
     }, {} as Record<number, (ShiftApplication & { nurse: User })[]>);
 
-    return result.map(r => ({
-      ...r.shift,
-      creator: r.creator!,
-      claimedBy: r.shift.claimedBy, // Keep the actual claimedBy value
-      applications: applicationsByShift[r.shift.id] || [],
-    }));
+    // Get claimed nurses for shifts that have been claimed
+    const claimedShifts = result.filter(r => r.shift.claimedBy);
+    const claimedUserIds = claimedShifts.map(r => r.shift.claimedBy!);
+    const claimedUsers = claimedUserIds.length > 0 ? await db
+      .select()
+      .from(users)
+      .where(inArray(users.id, claimedUserIds)) : [];
+    
+    const claimedUserMap = claimedUsers.reduce((acc, user) => {
+      acc[user.id] = user;
+      return acc;
+    }, {} as Record<string, User>);
+
+    return result.map(r => {
+      const shift = { ...r.shift };
+      return {
+        ...shift,
+        creator: r.creator!,
+        claimedBy: shift.claimedBy ? claimedUserMap[shift.claimedBy] || null : null,
+        applications: applicationsByShift[shift.id] || [],
+      } as ShiftWithDetails;
+    });
   }
 
   async getShiftById(id: number): Promise<ShiftWithDetails | undefined> {
@@ -356,15 +440,16 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(users, eq(shiftApplications.nurseId, users.id))
       .where(eq(shiftApplications.shiftId, id));
 
+    const shift = { ...result.shift };
     return {
-      ...result.shift,
+      ...shift,
       creator: result.creator!,
       claimedBy,
       applications: applications.map(app => ({
         ...app.application,
         nurse: app.nurse!,
       })),
-    };
+    } as ShiftWithDetails;
   }
 
   async updateShift(id: number, updates: Partial<Shift>): Promise<Shift | undefined> {
@@ -377,17 +462,63 @@ export class DatabaseStorage implements IStorage {
   }
 
   async claimShift(shiftId: number, nurseId: string): Promise<Shift | undefined> {
+    // First get the shift to calculate bonus
+    const [existingShift] = await db
+      .select()
+      .from(shifts)
+      .where(and(eq(shifts.id, shiftId), eq(shifts.status, "open")));
+    
+    if (!existingShift) return undefined;
+    
+    const now = new Date();
+    const hoursBeforeStart = (existingShift.startTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+    const bonus = this.calculateEarlyClaimBonus(hoursBeforeStart);
+    
+    // Calculate new pay rate with bonus
+    const baseRate = parseFloat(existingShift.baseHourlyRate || existingShift.payRate);
+    const totalRate = baseRate + bonus;
+    
     const [shift] = await db
       .update(shifts)
       .set({
         claimedBy: nurseId,
-        claimedAt: new Date(),
+        claimedAt: now,
         status: "claimed",
-        updatedAt: new Date(),
+        updatedAt: now,
+        earlyClaimBonus: bonus.toFixed(2),
+        totalHourlyRate: totalRate.toFixed(2),
+        hoursBeforeStart: hoursBeforeStart.toFixed(2),
       })
       .where(and(eq(shifts.id, shiftId), eq(shifts.status, "open")))
       .returning();
     return shift;
+  }
+
+  async calculateShiftIncentive(shiftId: number): Promise<{ 
+    earlyClaimBonus: number; 
+    totalHourlyRate: number; 
+    hoursBeforeStart: number;
+    baseHourlyRate: number;
+  } | undefined> {
+    const [shift] = await db
+      .select()
+      .from(shifts)
+      .where(and(eq(shifts.id, shiftId), eq(shifts.status, "open")));
+    
+    if (!shift) return undefined;
+    
+    const now = new Date();
+    const hoursBeforeStart = (shift.startTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+    const earlyClaimBonus = this.calculateEarlyClaimBonus(hoursBeforeStart);
+    const baseHourlyRate = parseFloat(shift.baseHourlyRate || shift.payRate);
+    const totalHourlyRate = baseHourlyRate + earlyClaimBonus;
+    
+    return {
+      earlyClaimBonus,
+      totalHourlyRate,
+      hoursBeforeStart,
+      baseHourlyRate,
+    };
   }
 
   // Shift application operations

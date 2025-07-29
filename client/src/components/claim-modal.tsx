@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -20,6 +20,13 @@ export function ClaimModal({ shift, isOpen, onClose }: ClaimModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Fetch incentive preview
+  const { data: incentivePreview, isLoading: isLoadingIncentive } = useQuery({
+    queryKey: ['/api/shifts', shift.id, 'incentive-preview'],
+    enabled: isOpen,
+    retry: false,
+  });
+
   const claimMutation = useMutation({
     mutationFn: async () => {
       await apiRequest("PATCH", `/api/shifts/${shift.id}/claim`);
@@ -29,9 +36,13 @@ export function ClaimModal({ shift, isOpen, onClose }: ClaimModalProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/my-shifts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/stats"] });
       
+      const bonusMessage = earlyClaimBonus > 0 
+        ? ` with +$${earlyClaimBonus.toFixed(2)}/hr Early Bird bonus!` 
+        : '';
+      
       toast({
         title: "Shift Claimed Successfully!",
-        description: `${shift.title} has been added to your schedule`,
+        description: `${shift.title} has been added to your schedule${bonusMessage}`,
         className: "notification-toast",
       });
       
@@ -61,7 +72,18 @@ export function ClaimModal({ shift, isOpen, onClose }: ClaimModalProps) {
   const startTime = new Date(shift.startTime);
   const endTime = new Date(shift.endTime);
   const duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-  const totalPay = Math.round(duration * parseFloat(shift.payRate));
+  
+  // Use incentive preview if available, otherwise fallback to shift rate
+  const incentiveData = incentivePreview as { 
+    totalHourlyRate: number; 
+    earlyClaimBonus: number; 
+    baseHourlyRate: number; 
+    hoursBeforeStart: number;
+  } | undefined;
+  
+  const displayRate = incentiveData?.totalHourlyRate || parseFloat(shift.payRate);
+  const totalPay = Math.round(duration * displayRate);
+  const earlyClaimBonus = incentiveData?.earlyClaimBonus || 0;
   
   const now = new Date();
   const timeDiff = startTime.getTime() - now.getTime();
@@ -120,7 +142,19 @@ export function ClaimModal({ shift, isOpen, onClose }: ClaimModalProps) {
               <p className="text-sm text-gray-600">{shift.location} - {shift.department}</p>
             </div>
             <div className="text-right">
-              <div className="pay-rate text-3xl font-bold font-mono">${shift.payRate}/hr</div>
+              {earlyClaimBonus > 0 ? (
+                <div>
+                  <div className="flex items-center justify-end gap-2 mb-1">
+                    <span className="text-sm text-gray-500 line-through">${incentiveData?.baseHourlyRate.toFixed(2)}/hr</span>
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                      +${earlyClaimBonus.toFixed(2)} Early Bird
+                    </span>
+                  </div>
+                  <div className="pay-rate text-3xl font-bold font-mono text-green-600">${displayRate.toFixed(2)}/hr</div>
+                </div>
+              ) : (
+                <div className="pay-rate text-3xl font-bold font-mono">${shift.payRate}/hr</div>
+              )}
               <div className="text-sm text-green-600 font-medium">${totalPay} total</div>
             </div>
           </div>
@@ -136,6 +170,34 @@ export function ClaimModal({ shift, isOpen, onClose }: ClaimModalProps) {
                     This shift starts in {Math.floor(hoursUntilShift)}h {Math.round((hoursUntilShift % 1) * 60)}m. 
                     Please ensure you have adequate travel time.
                   </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Early Bird Bonus Details */}
+          {earlyClaimBonus > 0 && (
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-4 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center">
+                  <i className="fas fa-bolt text-green-600 mr-2" />
+                  <span className="text-sm font-medium text-gray-700">Early Bird Bonus Applied!</span>
+                </div>
+                <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full font-semibold">
+                  +${earlyClaimBonus.toFixed(2)}/hr
+                </span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <div className="flex justify-between">
+                  <span>Base Rate:</span>
+                  <span>${incentiveData?.baseHourlyRate.toFixed(2)}/hr</span>
+                </div>
+                <div className="flex justify-between font-medium text-green-700">
+                  <span>Total Rate:</span>
+                  <span>${displayRate.toFixed(2)}/hr</span>
+                </div>
+                <div className="text-xs text-gray-500 mt-2">
+                  You're claiming this shift {incentiveData?.hoursBeforeStart.toFixed(1)} hours early!
                 </div>
               </div>
             </div>

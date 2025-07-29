@@ -172,6 +172,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Incentive preview route
+  app.get('/api/shifts/:id/incentive-preview', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'nurse') {
+        return res.status(403).json({ message: "Only nurses can preview incentives" });
+      }
+
+      const shiftId = parseInt(req.params.id);
+      
+      if (isNaN(shiftId)) {
+        return res.status(400).json({ message: "Invalid shift ID" });
+      }
+      
+      const incentive = await storage.calculateShiftIncentive(shiftId);
+      
+      if (!incentive) {
+        return res.status(404).json({ message: "Shift not found or not available" });
+      }
+      
+      res.json(incentive);
+    } catch (error) {
+      console.error("Error calculating incentive preview:", error);
+      res.status(500).json({ message: "Failed to calculate incentive preview" });
+    }
+  });
+
   // Shift application routes
   app.post('/api/shifts/:id/apply', isAuthenticated, async (req: any, res) => {
     try {

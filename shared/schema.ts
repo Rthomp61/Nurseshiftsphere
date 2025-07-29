@@ -47,6 +47,10 @@ export const shifts = pgTable("shifts", {
   startTime: timestamp("start_time").notNull(),
   endTime: timestamp("end_time").notNull(),
   payRate: decimal("pay_rate", { precision: 10, scale: 2 }).notNull(),
+  baseHourlyRate: decimal("base_hourly_rate", { precision: 10, scale: 2 }),
+  earlyClaimBonus: decimal("early_claim_bonus", { precision: 10, scale: 2 }).default("0.00"),
+  totalHourlyRate: decimal("total_hourly_rate", { precision: 10, scale: 2 }),
+  hoursBeforeStart: decimal("hours_before_start", { precision: 10, scale: 2 }),
   patientRatio: varchar("patient_ratio"),
   requirements: jsonb("requirements"),
   additionalNotes: text("additional_notes"),
@@ -132,6 +136,12 @@ export const insertShiftSchema = createInsertSchema(shifts).omit({
   claimedBy: true,
   claimedAt: true,
   status: true,
+  earlyClaimBonus: true,
+  totalHourlyRate: true,
+  hoursBeforeStart: true,
+}).extend({
+  // Make baseHourlyRate optional in creation, will default to payRate
+  baseHourlyRate: z.string().optional(),
 });
 
 export const insertShiftApplicationSchema = createInsertSchema(shiftApplications).omit({
