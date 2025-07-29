@@ -22,20 +22,12 @@ export function ClaimModal({ shift, isOpen, onClose }: ClaimModalProps) {
 
   // Fetch incentive preview
   const { data: incentivePreview, isLoading: isLoadingIncentive, error: incentiveError } = useQuery({
-    queryKey: ['/api/shifts', shift.id, 'incentive-preview'],
+    queryKey: [`/api/shifts/${shift.id}/incentive-preview`],
     enabled: isOpen,
     retry: false,
   });
 
-  // Debug logging
-  if (isOpen) {
-    console.log('ClaimModal Debug:', {
-      incentivePreview,
-      isLoadingIncentive,
-      incentiveError,
-      shiftId: shift.id
-    });
-  }
+
 
   const claimMutation = useMutation({
     mutationFn: async () => {
@@ -46,8 +38,9 @@ export function ClaimModal({ shift, isOpen, onClose }: ClaimModalProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/my-shifts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/stats"] });
       
-      const bonusMessage = earlyClaimBonus > 0 
-        ? ` with +$${earlyClaimBonus.toFixed(2)}/hr Early Bird bonus!` 
+      const bonus = incentiveData?.earlyClaimBonus || 0;
+      const bonusMessage = bonus > 0 
+        ? ` with +$${bonus.toFixed(2)}/hr Early Bird bonus!` 
         : '';
       
       toast({
