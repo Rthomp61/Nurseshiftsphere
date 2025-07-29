@@ -21,11 +21,21 @@ export function ClaimModal({ shift, isOpen, onClose }: ClaimModalProps) {
   const queryClient = useQueryClient();
 
   // Fetch incentive preview
-  const { data: incentivePreview, isLoading: isLoadingIncentive } = useQuery({
+  const { data: incentivePreview, isLoading: isLoadingIncentive, error: incentiveError } = useQuery({
     queryKey: ['/api/shifts', shift.id, 'incentive-preview'],
     enabled: isOpen,
     retry: false,
   });
+
+  // Debug logging
+  if (isOpen) {
+    console.log('ClaimModal Debug:', {
+      incentivePreview,
+      isLoadingIncentive,
+      incentiveError,
+      shiftId: shift.id
+    });
+  }
 
   const claimMutation = useMutation({
     mutationFn: async () => {
@@ -142,7 +152,12 @@ export function ClaimModal({ shift, isOpen, onClose }: ClaimModalProps) {
               <p className="text-sm text-gray-600">{shift.location} - {shift.department}</p>
             </div>
             <div className="text-right">
-              {earlyClaimBonus > 0 ? (
+              {isLoadingIncentive ? (
+                <div className="text-center">
+                  <div className="pay-rate text-3xl font-bold font-mono">${shift.payRate}/hr</div>
+                  <div className="text-xs text-gray-500">Loading bonus...</div>
+                </div>
+              ) : earlyClaimBonus > 0 ? (
                 <div className="relative">
                   {/* Enhanced Floating Early Bird Badge */}
                   <div className="absolute -top-4 -right-4 z-20">
