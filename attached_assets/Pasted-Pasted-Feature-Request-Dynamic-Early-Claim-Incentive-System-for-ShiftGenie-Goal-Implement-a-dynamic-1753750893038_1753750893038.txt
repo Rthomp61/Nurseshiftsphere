@@ -1,0 +1,62 @@
+Pasted--Feature-Request-Dynamic-Early-Claim-Incentive-System-for-ShiftGenie-Goal-Implement-a-dynamic--1753316754152_1753316754153.txt
+# Feature Request: Dynamic Early Claim Incentive System for ShiftGenie
+
+## Goal
+Implement a dynamic incentive system that encourages nurses to claim shifts 24+ hours in advance by offering tiered hourly bonuses. This addresses the critical issue where 70% of PM/NOC shifts are claimed less than 2-3 hours before start time.
+
+## Current Project Context
+This is for ShiftGenie, a healthcare shift management platform with:
+- **Tech Stack**: React 18 + TypeScript frontend, Node.js + Express backend, Drizzle ORM with PostgreSQL
+- **Authentication**: Replit Auth with role-based access (nurses vs coordinators)
+- **UI System**: Glass morphism design using shadcn/ui components and Tailwind CSS
+- **State Management**: TanStack Query for server state
+
+## Specific Requirements
+
+### Database Schema Updates (shared/schema.ts)
+Add fields to the shifts table to support:
+- `baseHourlyRate` (decimal) - original hourly rate
+- `earlyClaimBonus` (decimal) - calculated bonus amount
+- `totalHourlyRate` (decimal) - base rate + bonus
+- `claimedAt` (timestamp) - when the shift was claimed
+- `hoursBeforeStart` (decimal) - calculated field for bonus determination
+
+### Bonus Calculation Logic
+Implement tiered bonus system:
+- **24+ hours early**: +$5/hour bonus
+- **12-24 hours early**: +$3/hour bonus  
+- **6-12 hours early**: +$1/hour bonus
+- **Less than 6 hours**: No bonus
+
+### Backend API Requirements (server/routes.ts)
+1. **GET /api/shifts** - Include calculated bonus information in shift listings
+2. **POST /api/shifts/:id/claim** - Calculate and apply bonus when nurse claims shift
+3. **GET /api/shifts/incentive-preview/:id** - Preview potential bonus before claiming
+
+### Frontend Features
+1. **Shift Cards Enhancement**: Display potential bonus prominently with countdown timer
+2. **Claim Modal Update**: Show bonus calculation before confirmation
+3. **Nurse Dashboard**: Add "Early Bird Bonus" metrics section
+
+## Implementation Approach
+Please build this incrementally:
+
+**Step 1**: Update database schema and run migration
+**Step 2**: Implement bonus calculation logic in backend
+**Step 3**: Update shift claiming API endpoint
+**Step 4**: Enhance frontend shift displays with bonus information
+
+## Success Criteria
+- Shifts show dynamic bonus amounts based on claim timing
+- Bonus is automatically calculated and applied when nurse claims shift
+- UI clearly communicates potential earnings to encourage early claims
+- All bonus calculations are accurate and update in real-time
+
+## Technical Constraints
+- Use Drizzle ORM for all database operations (no raw SQL)
+- Follow existing TypeScript patterns with strict mode
+- Build UI components using shadcn/ui primitives
+- Ensure responsive design for mobile nurses
+- Use TanStack Query for all API calls
+
+Start with Step 1 (database schema) and let me know when that's complete before moving to the next step.
