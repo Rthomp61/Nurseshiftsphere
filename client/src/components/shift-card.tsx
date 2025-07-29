@@ -108,52 +108,7 @@ export function ShiftCard({ shift, onClaim }: ShiftCardProps) {
         </div>
       </div>
       
-      {/* Enhanced Early Bird Bonus Alert */}
-      {potentialBonus > 0 && (
-        <div className="mb-4 relative overflow-hidden">
-          {/* Animated Background */}
-          <div className="absolute inset-0 celebration-bg opacity-40"></div>
-          
-          <div className="relative p-4 bg-gradient-to-r from-amber-50 via-green-50 to-emerald-50 rounded-xl border-2 border-amber-300 shadow-md">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-3">
-                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 p-2 rounded-full bonus-sparkle">
-                  <i className="fas fa-bolt text-white text-lg" />
-                </div>
-                <div>
-                  <span className="text-base font-bold text-gray-800">🔥 EARLY BIRD BONUS ACTIVE!</span>
-                  <div className="text-sm text-amber-700 font-medium">
-                    {hoursUntilShift >= 24 && "⭐ Premium Tier: 24+ hours early"}
-                    {hoursUntilShift >= 12 && hoursUntilShift < 24 && "💎 Gold Tier: 12-24 hours early"}
-                    {hoursUntilShift >= 6 && hoursUntilShift < 12 && "🥉 Bronze Tier: 6-12 hours early"}
-                  </div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="bg-green-600 text-white px-3 py-2 rounded-lg font-bold text-lg shadow-lg">
-                  +${(potentialBonus * duration).toFixed(0)}
-                </div>
-                <div className="text-xs text-green-700 font-medium mt-1">Extra Pay!</div>
-              </div>
-            </div>
-            
-            {/* Urgency Warning */}
-            <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center gap-2">
-                <i className="fas fa-exclamation-triangle text-red-500 animate-pulse" />
-                <span className="text-sm font-medium text-red-700">
-                  {hoursUntilShift >= 24 && hoursUntilShift < 25 && "⚡ Bonus drops to $3/hr in less than 1 hour!"}
-                  {hoursUntilShift >= 12 && hoursUntilShift < 13 && "⚡ Bonus drops to $1/hr in less than 1 hour!"}
-                  {hoursUntilShift >= 6 && hoursUntilShift < 7 && "⚡ Bonus expires in less than 1 hour!"}
-                  {hoursUntilShift >= 25 && "🎯 Maximum bonus secured!"}
-                  {hoursUntilShift >= 13 && hoursUntilShift < 24 && "💰 Great bonus rate!"}
-                  {hoursUntilShift >= 7 && hoursUntilShift < 12 && "✨ Good bonus opportunity!"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
       
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4 text-xs text-gray-500">
