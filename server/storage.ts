@@ -69,9 +69,10 @@ export interface IStorage {
 export class DatabaseStorage implements IStorage {
   // Calculate early claim bonus based on hours before shift start
   private calculateEarlyClaimBonus(hoursBeforeStart: number): number {
-    if (hoursBeforeStart >= 24) return 5.00;
-    if (hoursBeforeStart >= 12) return 3.00;
-    if (hoursBeforeStart >= 6) return 1.00;
+    if (hoursBeforeStart >= 24) return 5.00;   // Premium tier: 24+ hours
+    if (hoursBeforeStart >= 12) return 3.00;   // Gold tier: 12-24 hours  
+    if (hoursBeforeStart >= 6) return 2.00;    // Silver tier: 6-12 hours
+    if (hoursBeforeStart >= 3) return 1.00;    // Bronze tier: 3-6 hours
     return 0.00;
   }
 
