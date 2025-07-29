@@ -125,8 +125,7 @@ export function ShiftCard({ shift, onClaim }: ShiftCardProps) {
                   <div className="text-sm text-amber-700 font-medium">
                     {hoursUntilShift >= 24 && "⭐ Premium Tier: 24+ hours early"}
                     {hoursUntilShift >= 12 && hoursUntilShift < 24 && "💎 Gold Tier: 12-24 hours early"}
-                    {hoursUntilShift >= 6 && hoursUntilShift < 12 && "🥈 Silver Tier: 6-12 hours early"}
-                    {hoursUntilShift >= 3 && hoursUntilShift < 6 && "🥉 Bronze Tier: 3-6 hours early"}
+                    {hoursUntilShift >= 6 && hoursUntilShift < 12 && "🥉 Bronze Tier: 6-12 hours early"}
                   </div>
                 </div>
               </div>
@@ -144,13 +143,11 @@ export function ShiftCard({ shift, onClaim }: ShiftCardProps) {
                 <i className="fas fa-exclamation-triangle text-red-500 animate-pulse" />
                 <span className="text-sm font-medium text-red-700">
                   {hoursUntilShift >= 24 && hoursUntilShift < 25 && "⚡ Bonus drops to $3/hr in less than 1 hour!"}
-                  {hoursUntilShift >= 12 && hoursUntilShift < 13 && "⚡ Bonus drops to $2/hr in less than 1 hour!"}
-                  {hoursUntilShift >= 6 && hoursUntilShift < 7 && "⚡ Bonus drops to $1/hr in less than 1 hour!"}
-                  {hoursUntilShift >= 3 && hoursUntilShift < 4 && "⚡ Bonus expires in less than 1 hour!"}
+                  {hoursUntilShift >= 12 && hoursUntilShift < 13 && "⚡ Bonus drops to $1/hr in less than 1 hour!"}
+                  {hoursUntilShift >= 6 && hoursUntilShift < 7 && "⚡ Bonus expires in less than 1 hour!"}
                   {hoursUntilShift >= 25 && "🎯 Maximum bonus secured!"}
                   {hoursUntilShift >= 13 && hoursUntilShift < 24 && "💰 Great bonus rate!"}
-                  {hoursUntilShift >= 7 && hoursUntilShift < 12 && "💎 Silver bonus rate!"}
-                  {hoursUntilShift >= 4 && hoursUntilShift < 6 && "✨ Bronze bonus opportunity!"}
+                  {hoursUntilShift >= 7 && hoursUntilShift < 12 && "✨ Good bonus opportunity!"}
                 </span>
               </div>
             </div>
