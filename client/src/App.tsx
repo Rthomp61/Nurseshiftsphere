@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { NotificationToast } from "@/components/notification-toast";
+import { RoleSetup } from "@/components/role-setup";
 import Landing from "@/pages/landing";
 import NurseDashboard from "@/pages/nurse-dashboard";
 import CoordinatorDashboard from "@/pages/coordinator-dashboard";
@@ -35,6 +36,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <NotificationToast />
+        <RoleSetup />
         <Router />
       </TooltipProvider>
     </QueryClientProvider>
