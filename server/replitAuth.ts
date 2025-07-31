@@ -55,8 +55,7 @@ function updateUserSession(
 }
 
 async function upsertUser(
-  claims: any,
-  role?: 'nurse' | 'coordinator'
+  claims: any
 ) {
   await storage.upsertUser({
     id: claims["sub"],
@@ -64,7 +63,6 @@ async function upsertUser(
     firstName: claims["first_name"],
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
-    role: role,
   });
 }
 
@@ -82,12 +80,7 @@ export async function setupAuth(app: Express) {
   ) => {
     const user = {};
     updateUserSession(user, tokens);
-    
-    // Get the intended role from the auth state (passed via login route)
-    const state = tokens.state ? JSON.parse(tokens.state as string) : {};
-    const intendedRole = state.role;
-    
-    await upsertUser(tokens.claims(), intendedRole);
+    await upsertUser(tokens.claims());
     verified(null, user);
   };
 
@@ -110,19 +103,50 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/login", (req, res, next) => {
     const role = req.query.role as 'nurse' | 'coordinator';
-    const state = role ? JSON.stringify({ role }) : undefined;
+    
+    // Store the intended role in the session
+    if (role) {
+      (req as any).session.intendedRole = role;
+    }
     
     passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
-      state: state,
     })(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
+    passport.authenticate(`replitauth:${req.hostname}`, async (err: any, user: any) => {
+      if (err) {
+        return res.redirect("/api/login");
+      }
+      if (!user) {
+        return res.redirect("/api/login");
+      }
+
+      // Get the intended role from session
+      const intendedRole = (req as any).session?.intendedRole;
+      
+      // If we have an intended role, update the user's role
+      if (intendedRole && ['nurse', 'coordinator'].includes(intendedRole)) {
+        const userId = user.claims?.sub;
+        if (userId) {
+          try {
+            await storage.updateUserRole(userId, intendedRole);
+          } catch (error) {
+            console.error("Error setting user role:", error);
+          }
+        }
+        // Clear the intended role from session
+        delete (req as any).session.intendedRole;
+      }
+
+      req.logIn(user, (err) => {
+        if (err) {
+          return res.redirect("/api/login");
+        }
+        return res.redirect("/");
+      });
     })(req, res, next);
   });
 
