@@ -76,29 +76,7 @@ export default function CoordinatorDashboard() {
                 </div>
                 <h1 className="text-xl font-bold text-gray-800">ShiftGenie <span className="text-purple-600">Pro</span></h1>
               </div>
-              {/* Role Toggle Slider */}
-              <div className="flex items-center bg-white/20 rounded-xl p-1">
-                <div className="relative w-20 h-8 bg-white/30 rounded-lg">
-                  <button
-                    onClick={async () => {
-                      await fetch('/api/users/switch-role', { 
-                        method: 'POST', 
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ role: 'nurse' })
-                      });
-                      window.location.reload();
-                    }}
-                    className="absolute left-0 top-0 w-10 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:text-gray-800 transition-all"
-                  >
-                    <i className="fas fa-user-nurse text-xs" />
-                  </button>
-                  <div className="absolute right-0 top-0 w-10 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg transition-all duration-300 flex items-center justify-center">
-                    <i className="fas fa-user-tie text-white text-xs" />
-                  </div>
-                </div>
-                <span className="ml-2 text-sm font-medium text-gray-700">Coordinator</span>
-              </div>
+
             </div>
             
             <div className="flex items-center space-x-4">

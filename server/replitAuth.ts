@@ -56,6 +56,7 @@ function updateUserSession(
 
 async function upsertUser(
   claims: any,
+  role?: 'nurse' | 'coordinator'
 ) {
   await storage.upsertUser({
     id: claims["sub"],
@@ -63,6 +64,7 @@ async function upsertUser(
     firstName: claims["first_name"],
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
+    role: role,
   });
 }
 
@@ -80,7 +82,12 @@ export async function setupAuth(app: Express) {
   ) => {
     const user = {};
     updateUserSession(user, tokens);
-    await upsertUser(tokens.claims());
+    
+    // Get the intended role from the auth state (passed via login route)
+    const state = tokens.state ? JSON.parse(tokens.state as string) : {};
+    const intendedRole = state.role;
+    
+    await upsertUser(tokens.claims(), intendedRole);
     verified(null, user);
   };
 
@@ -102,9 +109,13 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
+    const role = req.query.role as 'nurse' | 'coordinator';
+    const state = role ? JSON.stringify({ role }) : undefined;
+    
     passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
+      state: state,
     })(req, res, next);
   });
 

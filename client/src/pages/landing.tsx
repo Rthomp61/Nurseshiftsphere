@@ -3,9 +3,8 @@ import { GlassCard } from "@/components/ui/glass-card";
 
 export default function Landing() {
   const handleLogin = (role: 'nurse' | 'coordinator') => {
-    // Store the intended role in sessionStorage so we can set it after login
-    sessionStorage.setItem('intendedRole', role);
-    window.location.href = "/api/login";
+    // Pass the role directly to the login endpoint
+    window.location.href = `/api/login?role=${role}`;
   };
 
   return (

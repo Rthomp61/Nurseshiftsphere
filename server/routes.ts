@@ -286,23 +286,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Role switching route for demo purposes
-  app.post('/api/users/switch-role', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const { role } = req.body;
-      
-      if (!role || !['nurse', 'coordinator'].includes(role)) {
-        return res.status(400).json({ message: "Invalid role" });
-      }
 
-      await storage.updateUserRole(userId, role);
-      res.json({ message: "Role updated successfully" });
-    } catch (error) {
-      console.error("Error switching role:", error);
-      res.status(500).json({ message: "Failed to switch role" });
-    }
-  });
 
   // My shifts route
   app.get('/api/my-shifts', isAuthenticated, async (req: any, res) => {
