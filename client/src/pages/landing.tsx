@@ -42,7 +42,7 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
               <div 
                 onClick={() => handleLogin('nurse')}
-                className="group cursor-pointer bg-black/60 rounded px-8 py-4 hover:bg-black/70 transition-all duration-300 w-[320px]"
+                className="group cursor-pointer bg-white/20 backdrop-blur-md border border-white/30 rounded-lg px-8 py-4 hover:bg-white/30 transition-all duration-300 w-[320px] shadow-lg"
               >
                 <div className="flex items-center space-x-3 text-white">
                   <div className="w-8 h-8 flex items-center justify-center">
@@ -50,14 +50,14 @@ export default function Landing() {
                   </div>
                   <div className="text-left">
                     <div className="text-base font-semibold">I'm a Practitioner</div>
-                    <div className="text-sm opacity-80">Find and claim shifts</div>
+                    <div className="text-sm opacity-90">Find and claim shifts</div>
                   </div>
                 </div>
               </div>
               
               <div 
                 onClick={() => handleLogin('coordinator')}
-                className="group cursor-pointer bg-black/60 rounded px-8 py-4 hover:bg-black/70 transition-all duration-300 w-[320px]"
+                className="group cursor-pointer bg-white/20 backdrop-blur-md border border-white/30 rounded-lg px-8 py-4 hover:bg-white/30 transition-all duration-300 w-[320px] shadow-lg"
               >
                 <div className="flex items-center space-x-3 text-white">
                   <div className="w-8 h-8 flex items-center justify-center">
@@ -65,7 +65,7 @@ export default function Landing() {
                   </div>
                   <div className="text-left">
                     <div className="text-base font-semibold">I'm a Coordinator</div>
-                    <div className="text-sm opacity-80">Manage shifts & staff</div>
+                    <div className="text-sm opacity-90">Manage shifts & staff</div>
                   </div>
                 </div>
               </div>
