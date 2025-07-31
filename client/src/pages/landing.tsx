@@ -39,33 +39,33 @@ export default function Landing() {
             </p>
             
             {/* Login Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
               <div 
                 onClick={() => handleLogin('nurse')}
-                className="group cursor-pointer bg-black/70 backdrop-blur-sm rounded-lg p-6 hover:bg-black/80 transition-all duration-300 min-w-[280px]"
+                className="group cursor-pointer bg-black/80 rounded px-8 py-4 hover:bg-black/90 transition-all duration-300 w-[320px]"
               >
-                <div className="flex items-center space-x-4 text-white">
-                  <div className="w-10 h-10 flex items-center justify-center">
-                    <i className="fas fa-user text-2xl" />
+                <div className="flex items-center space-x-3 text-white">
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    <i className="fas fa-user text-lg" />
                   </div>
                   <div className="text-left">
-                    <div className="text-lg font-bold">I'm a Practitioner</div>
-                    <div className="text-sm opacity-90">Find and claim shifts</div>
+                    <div className="text-base font-semibold">I'm a Practitioner</div>
+                    <div className="text-sm opacity-80">Find and claim shifts</div>
                   </div>
                 </div>
               </div>
               
               <div 
                 onClick={() => handleLogin('coordinator')}
-                className="group cursor-pointer bg-black/70 backdrop-blur-sm rounded-lg p-6 hover:bg-black/80 transition-all duration-300 min-w-[280px]"
+                className="group cursor-pointer bg-black/80 rounded px-8 py-4 hover:bg-black/90 transition-all duration-300 w-[320px]"
               >
-                <div className="flex items-center space-x-4 text-white">
-                  <div className="w-10 h-10 flex items-center justify-center">
-                    <i className="fas fa-clipboard-list text-2xl" />
+                <div className="flex items-center space-x-3 text-white">
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    <i className="fas fa-clipboard-list text-lg" />
                   </div>
                   <div className="text-left">
-                    <div className="text-lg font-bold">I'm a Coordinator</div>
-                    <div className="text-sm opacity-90">Manage shifts & staff</div>
+                    <div className="text-base font-semibold">I'm a Coordinator</div>
+                    <div className="text-sm opacity-80">Manage shifts & staff</div>
                   </div>
                 </div>
               </div>
