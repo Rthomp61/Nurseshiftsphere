@@ -42,7 +42,7 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
               <div 
                 onClick={() => handleLogin('nurse')}
-                className="group cursor-pointer bg-black/80 rounded px-8 py-4 hover:bg-black/90 transition-all duration-300 w-[320px]"
+                className="group cursor-pointer bg-black/60 rounded px-8 py-4 hover:bg-black/70 transition-all duration-300 w-[320px]"
               >
                 <div className="flex items-center space-x-3 text-white">
                   <div className="w-8 h-8 flex items-center justify-center">
@@ -57,7 +57,7 @@ export default function Landing() {
               
               <div 
                 onClick={() => handleLogin('coordinator')}
-                className="group cursor-pointer bg-black/80 rounded px-8 py-4 hover:bg-black/90 transition-all duration-300 w-[320px]"
+                className="group cursor-pointer bg-black/60 rounded px-8 py-4 hover:bg-black/70 transition-all duration-300 w-[320px]"
               >
                 <div className="flex items-center space-x-3 text-white">
                   <div className="w-8 h-8 flex items-center justify-center">
